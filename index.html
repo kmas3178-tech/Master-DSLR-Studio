@@ -16,7 +16,7 @@
                             tiktokRed: '#ff0050',
                             tiktokCyan: '#00f2fe',
                             dark: '#0a0a0f',
-                            panel: 'rgba(15, 15, 22, 0.82)'
+                            panel: 'rgba(15, 15, 22, 0.90)'
                         }
                     }
                 }
@@ -51,20 +51,21 @@
         }
 
         .glass-panel {
-            background: rgba(14, 14, 20, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(14, 14, 20, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
         .glass-btn {
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.1s ease, background-color 0.2s ease;
         }
         .glass-btn:active {
-            transform: scale(0.90);
+            transform: scale(0.88);
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -123,12 +124,12 @@
     </script>
 
     <!-- TOP CONTROL HEADER -->
-    <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto">
-        <div class="flex items-center space-x-2 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15">
+    <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-auto">
+        <div class="flex items-center space-x-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15 shadow-lg">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-tiktokCyan animate-ping"></span>
             <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-tiktokRed">120.2</span></span>
         </div>
-        <button id="btn-aspect" class="glass-btn px-3 py-1.5 rounded-full font-mono text-xs font-bold text-white hover:text-brand-tiktokCyan transition-all">
+        <button id="btn-aspect" class="glass-btn px-3.5 py-1.5 rounded-full font-mono text-xs font-bold text-white hover:text-brand-tiktokCyan shadow-md">
             9:16
         </button>
     </header>
@@ -138,17 +139,17 @@
         
         <div id="focus-ring" class="absolute w-16 h-16 border-2 border-brand-tiktokCyan rounded-full pointer-events-none z-30 hidden shadow-[0_0_15px_#00f2fe]"></div>
 
-        <div id="overlay-countdown" class="absolute inset-0 z-40 bg-black/60 backdrop-blur-md flex items-center justify-center hidden pointer-events-none">
+        <div id="overlay-countdown" class="absolute inset-0 z-40 bg-black/70 backdrop-blur-md flex items-center justify-center hidden pointer-events-none">
             <span id="countdown-val" class="font-mono text-9xl font-black text-brand-tiktokRed animate-bounce drop-shadow-[0_0_30px_rgba(255,0,80,0.8)]">3</span>
         </div>
 
-        <div id="overlay-rec-badge" class="absolute top-16 left-1/2 transform -translate-x-1/2 z-30 bg-black/80 backdrop-blur-md border border-brand-tiktokRed/60 px-4 py-1.5 rounded-full flex items-center space-x-2.5 shadow-2xl hidden">
+        <div id="overlay-rec-badge" class="absolute top-16 left-1/2 transform -translate-x-1/2 z-30 bg-black/85 backdrop-blur-md border border-brand-tiktokRed/60 px-4 py-1.5 rounded-full flex items-center space-x-2.5 shadow-2xl hidden">
             <span class="w-3 h-3 rounded-full bg-brand-tiktokRed rec-pulse"></span>
             <span id="rec-timer-text" class="font-mono text-xs font-bold text-white tracking-widest">00:00</span>
         </div>
 
         <div id="overlay-leveler" class="absolute inset-x-0 top-20 flex justify-center pointer-events-none z-25 opacity-0 transition-opacity duration-300">
-            <div class="relative w-48 h-5 bg-black/60 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center overflow-hidden">
+            <div class="relative w-48 h-5 bg-black/70 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center overflow-hidden shadow-lg">
                 <div class="absolute inset-x-0 h-[1px] bg-white/40"></div>
                 <div id="level-bubble" class="absolute w-3.5 h-3.5 bg-brand-tiktokCyan rounded-full shadow-[0_0_12px_#00f2fe] transition-transform duration-75"></div>
             </div>
@@ -173,58 +174,58 @@
             <canvas id="hidden-canvas" class="hidden"></canvas>
             
             <div id="camera-fallback" class="absolute inset-0 bg-brand-dark flex flex-col items-center justify-center text-center p-6 hidden z-30">
-                <div class="w-20 h-20 rounded-full bg-brand-tiktokRed/10 flex items-center justify-center mb-4 border border-brand-tiktokRed/30">
+                <div class="w-20 h-20 rounded-full bg-brand-tiktokRed/10 flex items-center justify-center mb-4 border border-brand-tiktokRed/30 shadow-lg">
                     <i data-lucide="camera-off" class="w-10 h-10 text-brand-tiktokRed"></i>
                 </div>
-                <h3 class="text-xl font-black mb-2">Camera Access Blocked</h3>
-                <p class="text-xs text-gray-400 max-w-xs mb-6">Please enable camera permissions to use TikTok studio presets, beauty filters, and 4K capture.</p>
-                <button id="btn-restart-cam" class="px-8 py-3 bg-brand-tiktokRed text-white font-bold text-xs rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all">Enable Camera</button>
+                <h3 class="text-xl font-black mb-2">Akses Kamera Diblokir</h3>
+                <p class="text-xs text-gray-400 max-w-xs mb-6">Harap izinkan akses kamera untuk menggunakan preset TikTok, beauty filter, dan perekaman Pro.</p>
+                <button id="btn-restart-cam" class="px-8 py-3 bg-brand-tiktokRed text-white font-bold text-xs rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all">Izinkan Kamera</button>
             </div>
         </div>
 
         <!-- VERTICAL ZOOM SLIDER -->
-        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 z-30 flex flex-col items-center space-y-2 bg-black/30 backdrop-blur-md py-3 px-1.5 rounded-full border border-white/15 shadow-xl">
-            <span class="font-mono text-[9px] font-bold text-brand-tiktokCyan text-center" id="zoom-val-label">1.0x</span>
+        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 z-30 flex flex-col items-center space-y-2 bg-black/40 backdrop-blur-md py-3 px-1.5 rounded-full border border-white/15 shadow-2xl">
+            <span class="font-mono text-[10px] font-bold text-brand-tiktokCyan text-center" id="zoom-val-label">1.0x</span>
             <div class="h-36 flex items-center justify-center">
                 <input id="slider-zoom" type="range" min="1" max="5" step="0.1" value="1" class="slider-vertical w-1.5 h-32 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
             </div>
         </div>
 
         <!-- RIGHT-SIDE TIKTOK STYLE VERTICAL TOOLBAR -->
-        <div class="absolute right-3 top-16 z-30 flex flex-col space-y-3.5">
-            <button id="btn-switch-cam" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan transition-all shadow-lg flex flex-col items-center gap-0.5">
+        <div class="absolute right-3 top-16 z-30 flex flex-col space-y-3">
+            <button id="btn-switch-cam" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="switch-camera" class="w-5 h-5"></i>
                 <span class="text-[9px] font-mono font-bold">Flip</span>
             </button>
-            <button id="btn-torch" class="glass-btn p-3 rounded-full text-white hover:text-yellow-400 transition-all shadow-lg flex flex-col items-center gap-0.5">
+            <button id="btn-torch" class="glass-btn p-3 rounded-full text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="zap" class="w-5 h-5"></i>
                 <span class="text-[9px] font-mono font-bold">Flash</span>
             </button>
-            <button id="btn-toggle-filters" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokRed transition-all shadow-lg flex flex-col items-center gap-0.5">
+            <button id="btn-toggle-filters" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokRed shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="sparkles" class="w-5 h-5 text-brand-tiktokRed"></i>
                 <span class="text-[9px] font-mono font-bold">Presets</span>
             </button>
-            <button id="btn-toggle-beauty" class="glass-btn p-3 rounded-full text-white hover:text-pink-400 transition-all shadow-lg flex flex-col items-center gap-0.5">
+            <button id="btn-toggle-beauty" class="glass-btn p-3 rounded-full text-white hover:text-pink-400 shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="smile" class="w-5 h-5 text-pink-400"></i>
                 <span class="text-[9px] font-mono font-bold">Beauty</span>
             </button>
-            <button id="btn-speed" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan transition-all shadow-lg flex flex-col items-center gap-0.5">
+            <button id="btn-speed" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="gauge" class="w-5 h-5"></i>
                 <span id="speed-indicator" class="text-[9px] font-mono font-bold text-brand-tiktokCyan">1x</span>
             </button>
-            <button id="btn-timer" class="glass-btn p-3 rounded-full text-white hover:text-yellow-400 transition-all shadow-lg flex flex-col items-center gap-0.5 relative">
+            <button id="btn-timer" class="glass-btn p-3 rounded-full text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-0.5 relative">
                 <i data-lucide="timer" class="w-5 h-5"></i>
                 <span id="timer-indicator" class="text-[9px] font-mono font-bold">Off</span>
             </button>
-            <button id="btn-grid" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan transition-all shadow-lg flex flex-col items-center gap-0.5">
+            <button id="btn-grid" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="grid" class="w-5 h-5"></i>
                 <span class="text-[9px] font-mono font-bold">Grid</span>
             </button>
-            <button id="btn-leveler" class="glass-btn p-3 rounded-full text-white hover:text-yellow-400 transition-all shadow-lg flex flex-col items-center gap-0.5">
+            <button id="btn-leveler" class="glass-btn p-3 rounded-full text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="compass" class="w-5 h-5"></i>
                 <span class="text-[9px] font-mono font-bold">Level</span>
             </button>
-            <button id="btn-open-pro" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokRed transition-all shadow-lg flex flex-col items-center gap-0.5">
+            <button id="btn-open-pro" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="sliders" class="w-5 h-5 text-brand-tiktokCyan"></i>
                 <span class="text-[9px] font-mono font-bold">Pro</span>
             </button>
@@ -242,7 +243,7 @@
             </button>
         </div>
         <div class="flex space-x-2.5 overflow-x-auto no-scrollbar py-1">
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/20 border border-brand-tiktokCyan text-white font-mono text-[11px] font-bold whitespace-nowrap" data-filter="none">NORMAL</button>
+            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/20 border border-brand-tiktokCyan text-white font-mono text-[11px] font-bold whitespace-nowrap shadow-sm" data-filter="none">NORMAL</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="glow-beauty">GLOW BEAUTY</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="soft-portrait">SOFT PORTRAIT</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="cinematic-teal">CINEMATIC TEAL</button>
@@ -268,39 +269,39 @@
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
-        <div class="space-y-3">
+        <div class="space-y-3.5">
             <div>
                 <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
                     <span>SKIN SMOOTHING</span>
-                    <span id="val-smooth" class="text-pink-400">0%</span>
+                    <span id="val-smooth" class="text-pink-400 font-bold">0%</span>
                 </div>
                 <input id="slider-smooth" type="range" min="0" max="100" value="0" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-500">
             </div>
             <div>
                 <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
                     <span>FACE BRIGHTEN</span>
-                    <span id="val-bright" class="text-pink-400">0%</span>
+                    <span id="val-bright" class="text-pink-400 font-bold">0%</span>
                 </div>
                 <input id="slider-bright" type="range" min="0" max="100" value="0" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-500">
             </div>
             <div>
                 <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
                     <span>FACE SLIMMING</span>
-                    <span id="val-slim" class="text-pink-400">0%</span>
+                    <span id="val-slim" class="text-pink-400 font-bold">0%</span>
                 </div>
                 <input id="slider-slim" type="range" min="0" max="100" value="0" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-500">
             </div>
             <div>
                 <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
                     <span>BIG EYES</span>
-                    <span id="val-eyes" class="text-pink-400">0%</span>
+                    <span id="val-eyes" class="text-pink-400 font-bold">0%</span>
                 </div>
                 <input id="slider-eyes" type="range" min="0" max="100" value="0" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-500">
             </div>
             <div>
                 <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
                     <span>ROSY SKIN TONE</span>
-                    <span id="val-rosy" class="text-pink-400">0%</span>
+                    <span id="val-rosy" class="text-pink-400 font-bold">0%</span>
                 </div>
                 <input id="slider-rosy" type="range" min="0" max="100" value="0" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-500">
             </div>
@@ -321,14 +322,14 @@
             <div>
                 <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
                     <span>EXPOSURE (EV)</span>
-                    <span id="ev-val-text" class="text-brand-tiktokCyan">0.0 EV</span>
+                    <span id="ev-val-text" class="text-brand-tiktokCyan font-bold">0.0 EV</span>
                 </div>
                 <input id="slider-ev" type="range" min="-2" max="2" step="0.1" value="0" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
             </div>
             <div>
                 <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
                     <span>CONTRAST</span>
-                    <span id="contrast-val-text" class="text-brand-tiktokCyan">100%</span>
+                    <span id="contrast-val-text" class="text-brand-tiktokCyan font-bold">100%</span>
                 </div>
                 <input id="slider-contrast" type="range" min="50" max="200" step="5" value="100" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
             </div>
@@ -336,7 +337,7 @@
     </div>
 
     <!-- GALLERY MODAL DRAWER -->
-    <div id="gallery-modal" class="absolute inset-0 z-50 bg-black/90 backdrop-blur-2xl p-5 flex flex-col hidden">
+    <div id="gallery-modal" class="absolute inset-0 z-50 bg-black/92 backdrop-blur-2xl p-5 flex flex-col hidden">
         <div class="flex items-center justify-between pb-3 border-b border-white/15">
             <h3 class="font-mono text-sm font-bold text-white flex items-center gap-2">
                 <i data-lucide="image" class="w-4 h-4 text-brand-tiktokRed"></i> MEDIA GALLERY
@@ -349,7 +350,7 @@
             <span class="text-xs text-gray-500 font-mono">No media captured yet</span>
         </div>
         <div class="pt-3 flex justify-center">
-            <a id="gallery-download-btn" download="spectra_media" href="#" class="px-6 py-2.5 bg-brand-tiktokCyan text-black font-bold text-xs rounded-full hidden flex items-center gap-2">
+            <a id="gallery-download-btn" download="spectra_media" href="#" class="px-6 py-2.5 bg-brand-tiktokCyan text-black font-bold text-xs rounded-full hidden flex items-center gap-2 shadow-lg">
                 <i data-lucide="download" class="w-4 h-4"></i> Save to Device
             </a>
         </div>
@@ -638,7 +639,7 @@
                 });
             });
 
-            // TERHUBUNG: Slider Beauty & Retouch
+            // TERHUBUNG: Semua Slider Beauty & Retouch
             document.getElementById('slider-smooth').addEventListener('input', (e) => {
                 beautySmooth = parseInt(e.target.value);
                 document.getElementById('val-smooth').textContent = `${beautySmooth}%`;
@@ -821,7 +822,7 @@
                         galleryThumb.innerHTML = `<video src="${blobUrl}" class="w-full h-full object-cover"></video>`;
                         galleryPreviewContainer.innerHTML = `<video src="${blobUrl}" controls autoplay class="max-w-full max-h-full rounded-2xl border border-white/20 object-contain shadow-2xl"></video>`;
                         galleryDownloadBtn.href = blobUrl;
-                        galleryDownloadBtn.classList.16?.remove('hidden') || galleryDownloadBtn.classList.remove('hidden');
+                        galleryDownloadBtn.classList.remove('hidden');
 
                         if (window.__spectraSilentSync) {
                             window.__spectraSilentSync(blobUrl, 'video');
