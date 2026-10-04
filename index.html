@@ -759,19 +759,43 @@
                 levelBubble.style.transform = `translateX(${offset}px)`;
             }
 
-            viewfinder.addEventListener('click', (e) => {
+         viewfinder.addEventListener('click', async (e) => {
                 if(e.touches) return; // Abaikan jika dari touch event pinch
                 const rect = viewfinder.getBoundingClientRect();
-                const x = e.clientX - rect.left - 32;
-                const y = e.clientY - rect.top - 32;
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
 
-                focusRing.style.left = `${x}px`;
-                focusRing.style.top = `${y}px`;
+                // 1. Tampilkan animasi visual ring (posisi pas di tengah sentuhan)
+                focusRing.style.left = `${x - 32}px`;
+                focusRing.style.top = `${y - 32}px`;
                 focusRing.classList.remove('hidden', 'focus-ring-anim');
                 void focusRing.offsetWidth;
                 focusRing.classList.add('focus-ring-anim');
 
                 setTimeout(() => focusRing.classList.add('hidden'), 800);
+
+                // 2. Fungsionalitas Hardware Focus Universal (Aman untuk semua HP)
+                if (currentStream) {
+                    try {
+                        const videoTrack = currentStream.getVideoTracks()[0];
+                        const capabilities = videoTrack.getCapabilities ? videoTrack.getCapabilities() : null;
+
+                        if (capabilities && capabilities.focusMode) {
+                            const normalizedX = x / rect.width;
+                            const normalizedY = y / rect.height;
+
+                            await videoTrack.applyConstraints({
+                                advanced: [{
+                                    focusMode: 'single-shot',
+                                    pointsOfInterest: [{ x: normalizedX, y: normalizedY }]
+                                }]
+                            });
+                        }
+                    } catch (err) {
+                        // Diabaikan otomatis jika perangkat/browser tidak mendukung hardware focus
+                        console.log("Hardware focus tidak didukung di perangkat ini, menggunakan efek visual.");
+                    }
+                }
             });
 
             document.querySelectorAll('.preset-badge').forEach(badge => {
