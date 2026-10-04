@@ -92,11 +92,6 @@
         .focus-ring-anim {
             animation: focusPulse 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-
-        .slider-vertical {
-            writing-mode: bt-lr;
-            -webkit-appearance: slider-vertical;
-        }
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] w-screen bg-black text-white relative overflow-hidden select-none">
@@ -183,16 +178,21 @@
             </div>
         </div>
 
-        <!-- VERTICAL ZOOM SLIDER -->
-        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 z-30 flex flex-col items-center space-y-2 bg-black/60 backdrop-blur-md py-3 px-1.5 rounded-full border border-white/15 shadow-2xl">
-            <span class="font-mono text-[10px] font-bold text-brand-tiktokCyan text-center" id="zoom-val-label">1.0x</span>
-            <div class="h-36 flex items-center justify-center">
-                <input id="slider-zoom" type="range" min="1" max="5" step="0.1" value="1" class="slider-vertical w-1.5 h-32 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
-            </div>
-        </div>
+        <!-- RIGHT-SIDE TIKTOK STYLE VERTICAL TOOLBAR & ZOOM -->
+        <div class="absolute right-3 top-16 z-30 flex flex-col space-y-2 max-h-[78vh] overflow-y-auto no-scrollbar pr-0.5 items-center">
+            
+            <!-- TOMBOL ZOOM DI SEBELAH KANAN -->
+            <button id="btn-zoom-in" class="glass-btn p-2 rounded-full text-white hover:text-brand-tiktokCyan shadow-lg flex flex-col items-center gap-0.5" title="Zoom In">
+                <i data-lucide="zoom-in" class="w-4 h-4"></i>
+                <span id="zoom-indicator" class="text-[8px] font-mono font-bold text-brand-tiktokCyan">1.0x</span>
+            </button>
+            <button id="btn-zoom-out" class="glass-btn p-2 rounded-full text-white hover:text-brand-tiktokCyan shadow-lg flex flex-col items-center gap-0.5" title="Zoom Out">
+                <i data-lucide="zoom-out" class="w-4 h-4"></i>
+                <span class="text-[8px] font-mono font-bold">Reset</span>
+            </button>
 
-        <!-- RIGHT-SIDE TIKTOK STYLE VERTICAL TOOLBAR -->
-        <div class="absolute right-3 top-16 z-30 flex flex-col space-y-2.5 max-h-[70vh] overflow-y-auto no-scrollbar pr-0.5">
+            <div class="w-6 h-[1px] bg-white/25 my-1"></div>
+
             <button id="btn-switch-cam" class="glass-btn p-2.5 rounded-full text-white hover:text-brand-tiktokCyan shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="switch-camera" class="w-4 h-4"></i>
                 <span class="text-[8px] font-mono font-bold">Flip</span>
@@ -419,6 +419,11 @@
             const btnSpeed = document.getElementById('btn-speed');
             const speedIndicator = document.getElementById('speed-indicator');
 
+            // Tombol Zoom Kanan
+            const btnZoomIn = document.getElementById('btn-zoom-in');
+            const btnZoomOut = document.getElementById('btn-zoom-out');
+            const zoomIndicator = document.getElementById('zoom-indicator');
+
             const overlayGrid = document.getElementById('overlay-grid');
             const overlayLeveler = document.getElementById('overlay-leveler');
             const levelBubble = document.getElementById('level-bubble');
@@ -466,7 +471,7 @@
             let isGridOn = false;
             let isLevelerOn = false;
             let currentMode = 'photo';
-            let currentZoom = 1;
+            let currentZoom = 1.0;
 
             const timerValues = [0, 3, 5, 10];
             let timerIdx = 0;
@@ -546,6 +551,26 @@
                 } catch(e) {}
             });
 
+            // LOGIKA TOMBOL ZOOM DI SEBELAH KANAN
+            btnZoomIn.addEventListener('click', () => {
+                currentZoom = Math.min(5.0, currentZoom + 0.5);
+                zoomIndicator.textContent = `${currentZoom.toFixed(1)}x`;
+                updateTransformMatrix();
+            });
+
+            btnZoomOut.addEventListener('click', () => {
+                currentZoom = 1.0;
+                zoomIndicator.textContent = `1.0x`;
+                updateTransformMatrix();
+            });
+
+            function updateTransformMatrix() {
+                let transforms = [];
+                if (useFrontCam) transforms.push('scaleX(-1)');
+                if (currentZoom > 1.0) transforms.push(`scale(${currentZoom})`);
+                videoEl.style.transform = transforms.join(' ');
+            }
+
             btnSpeed.addEventListener('click', () => {
                 speedIdx = (speedIdx + 1) % speedValues.length;
                 const spd = speedValues[speedIdx];
@@ -610,22 +635,6 @@
                 setTimeout(() => focusRing.classList.add('hidden'), 800);
             });
 
-            const sliderZoom = document.getElementById('slider-zoom');
-            const zoomValLabel = document.getElementById('zoom-val-label');
-
-            sliderZoom.addEventListener('input', (e) => {
-                currentZoom = parseFloat(e.target.value);
-                zoomValLabel.textContent = `${currentZoom.toFixed(1)}x`;
-                updateTransformMatrix();
-            });
-
-            function updateTransformMatrix() {
-                let transforms = [];
-                if (useFrontCam) transforms.push('scaleX(-1)');
-                if (currentZoom > 1) transforms.push(`scale(${currentZoom})`);
-                videoEl.style.transform = transforms.join(' ');
-            }
-
             document.querySelectorAll('.preset-badge').forEach(badge => {
                 badge.addEventListener('click', (e) => {
                     document.querySelectorAll('.preset-badge').forEach(b => {
@@ -639,7 +648,7 @@
                 });
             });
 
-            // TERHUBUNG: Semua Slider Beauty & Retouch
+            // Slider Beauty & Retouch
             document.getElementById('slider-smooth').addEventListener('input', (e) => {
                 beautySmooth = parseInt(e.target.value);
                 document.getElementById('val-smooth').textContent = `${beautySmooth}%`;
