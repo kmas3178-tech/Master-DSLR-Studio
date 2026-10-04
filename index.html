@@ -62,7 +62,7 @@
             background: rgba(0, 0, 0, 0.45);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 258, 0.18);
         }
         .glass-btn:active {
             transform: scale(0.90);
@@ -94,6 +94,12 @@
         }
         .focus-ring-anim {
             animation: focusPulse 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Custom styling for vertical slider range */
+        .slider-vertical {
+            writing-mode: bt-lr; /* IE */
+            -webkit-appearance: slider-vertical; /* WebKit */
         }
     </style>
 </head>
@@ -188,6 +194,14 @@
             </div>
         </div>
 
+        <!-- VERTICAL SLIDER ZOOM BAR (Di Sebelah Kiri, Tipis & Bening Transparan) -->
+        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 z-30 flex flex-col items-center space-y-2 bg-black/25 backdrop-blur-sm py-3 px-1.5 rounded-full border border-white/10 shadow-lg">
+            <span class="font-mono text-[9px] font-bold text-brand-tiktokCyan text-center" id="zoom-val-label">1.0x</span>
+            <div class="h-36 flex items-center justify-center">
+                <input id="slider-zoom" type="range" min="1" max="5" step="0.1" value="1" class="slider-vertical w-1.5 h-32 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
+            </div>
+        </div>
+
         <!-- RIGHT-SIDE TIKTOK STYLE VERTICAL TOOLBAR -->
         <div class="absolute right-3 top-16 z-30 flex flex-col space-y-3.5">
             <button id="btn-switch-cam" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan transition-all shadow-lg flex flex-col items-center gap-0.5">
@@ -227,19 +241,13 @@
                 <span class="text-[9px] font-mono font-bold">Pro</span>
             </button>
         </div>
-
-        <!-- SLIDER ZOOM BAR (Diperbarui: Lebih tipis, bening/transparan) -->
-        <div class="absolute bottom-24 z-30 flex items-center space-x-2.5 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10 shadow-lg w-52">
-            <span class="font-mono text-[10px] font-bold text-brand-tiktokCyan w-7 text-center" id="zoom-val-label">1.0x</span>
-            <input id="slider-zoom" type="range" min="1" max="5" step="0.1" value="1" class="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
-        </div>
     </main>
 
-    <!-- TIKTOK PRESETS HORIZONTAL BAR MODAL -->
+    <!-- TIKTOK PRESETS HORIZONTAL BAR MODAL (Versi Lengkap) -->
     <div id="presets-panel" class="absolute bottom-32 left-4 right-16 z-40 glass-panel rounded-3xl p-3.5 shadow-2xl border border-white/20 hidden transition-all duration-300">
         <div class="flex items-center justify-between mb-2 pb-1 border-b border-white/10">
             <span class="font-mono text-[11px] font-bold text-brand-tiktokRed flex items-center gap-1.5">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> TIKTOK LOOK PRESETS
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> TIKTOK LOOK PRESETS (COMPLETE)
             </span>
             <button id="btn-close-presets" class="p-1 text-gray-400 hover:text-white">
                 <i data-lucide="x" class="w-4 h-4"></i>
@@ -250,11 +258,15 @@
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="glow-beauty">GLOW BEAUTY</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="soft-portrait">SOFT PORTRAIT</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="cinematic-teal">CINEMATIC TEAL</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="cyberpunk-neon">CYBERPUNK</button>
+            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="cyberpunk-neon">CYBERPUNK NEON</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="warm-sunset">WARM SUNSET</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="noir-bw">NOIR B&W</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="vintage-film">VINTAGE FILM</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="vivid-pop">VIVID POP</button>
+            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="moody-blue">MOODY BLUE</button>
+            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="golden-hour">GOLDEN HOUR</button>
+            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="matrix-green">MATRIX GREEN</button>
+            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="retro-warm">RETRO WARM</button>
         </div>
     </div>
 
@@ -451,7 +463,7 @@
             const speedValues = [0.5, 1, 2, 3];
             let speedIdx = 1;
 
-            // Rasio Aspek Dinamis (Diperbaiki agar proporsi ukuran layar langsung berubah sesuai rasio)
+            // Rasio Aspek Dinamis
             const aspectRatios = [
                 { label: '9:16', css: '9/16', maxW: '100%', maxH: '100%' },
                 { label: '1:1', css: '1/1', maxW: '100%', maxH: '85%' },
@@ -535,7 +547,6 @@
                 btnTimer.classList.toggle('text-yellow-400', sec > 0);
             });
 
-            // Handler Tombol Rasio Aspek (Diperbarui agar ukuran bingkai benar-benar berubah di layar)
             btnAspect.addEventListener('click', () => {
                 aspectIdx = (aspectIdx + 1) % aspectRatios.length;
                 const activeAspect = aspectRatios[aspectIdx];
@@ -587,7 +598,7 @@
                 setTimeout(() => focusRing.classList.add('hidden'), 800);
             });
 
-            // Zoom Slide Range Input Handler
+            // Zoom Slide Range Input Handler (Vertical Left)
             const sliderZoom = document.getElementById('slider-zoom');
             const zoomValLabel = document.getElementById('zoom-val-label');
 
@@ -638,17 +649,24 @@
                 applyCombinedFilters();
             });
 
+            // Diperbarui agar Beauty & Filter tergabung dengan benar tanpa konflik
             function applyCombinedFilters() {
                 let filters = [];
-                const totalBrightness = 100 + (evVal * 20) + (beautyBright * 0.25);
+                
+                // Base exposure & contrast
+                const totalBrightness = 100 + (evVal * 20) + (beautyBright * 0.35);
                 filters.push(`brightness(${totalBrightness}%)`);
                 filters.push(`contrast(${contrastVal}%)`);
 
+                // Beauty Smooth (Skin softening via blur/contrast blending)
                 if (beautySmooth > 0) {
-                    filters.push(`blur(${(beautySmooth / 100) * 0.75}px)`);
+                    const blurVal = (beautySmooth / 100) * 1.2;
+                    filters.push(`blur(${blurVal}px)`);
+                    filters.push(`saturate(${100 + (beautySmooth * 0.15)}%)`);
                 }
 
-                if (activeFilter === 'glow-beauty') filters.push('brightness(110%) contrast(105%) saturate(120%)');
+                // Presets Filters
+                if (activeFilter === 'glow-beauty') filters.push('brightness(112%) contrast(105%) saturate(120%)');
                 else if (activeFilter === 'soft-portrait') filters.push('contrast(95%) brightness(108%) sepia(10%)');
                 else if (activeFilter === 'cinematic-teal') filters.push('contrast(130%) saturate(140%) sepia(20%) hue-rotate(-20deg)');
                 else if (activeFilter === 'cyberpunk-neon') filters.push('contrast(150%) saturate(200%) hue-rotate(130deg)');
@@ -656,6 +674,10 @@
                 else if (activeFilter === 'noir-bw') filters.push('grayscale(100%) contrast(170%)');
                 else if (activeFilter === 'vintage-film') filters.push('sepia(30%) contrast(85%) brightness(95%)');
                 else if (activeFilter === 'vivid-pop') filters.push('saturate(220%) contrast(120%)');
+                else if (activeFilter === 'moody-blue') filters.push('contrast(125%) saturate(90%) hue-rotate(190deg)');
+                else if (activeFilter === 'golden-hour') filters.push('sepia(35%) saturate(150%) brightness(110%) hue-rotate(-10deg)');
+                else if (activeFilter === 'matrix-green') filters.push('contrast(140%) saturate(160%) hue-rotate(85deg)');
+                else if (activeFilter === 'retro-warm') filters.push('sepia(50%) contrast(110%) brightness(95%)');
 
                 videoEl.style.filter = filters.join(' ');
             }
