@@ -167,7 +167,6 @@
         </div>
 
         <div id="aspect-frame" class="relative flex items-center justify-center transition-all duration-300 overflow-hidden bg-black/90 shadow-2xl border border-white/10" style="width: 100%; height: 100%; aspect-ratio: 9/16;">
-            <!-- Video Container dengan Wrapper terpisah agar transformasi scale zoom & flip bersih -->
             <div id="video-wrapper" class="w-full h-full relative overflow-hidden flex items-center justify-center">
                 <video id="video-stream" autoplay playsinline muted class="w-full h-full object-cover transition-transform duration-75"></video>
             </div>
@@ -183,7 +182,7 @@
             </div>
         </div>
 
-        <!-- VERTICAL ZOOM SLIDER (Di Kiri, Berdiri, Tipis & Bening) -->
+        <!-- VERTICAL ZOOM SLIDER -->
         <div class="absolute left-3 top-1/2 transform -translate-y-1/2 z-30 flex flex-col items-center space-y-2 bg-black/30 backdrop-blur-md py-3 px-1.5 rounded-full border border-white/15 shadow-xl">
             <span class="font-mono text-[9px] font-bold text-brand-tiktokCyan text-center" id="zoom-val-label">1.0x</span>
             <div class="h-36 flex items-center justify-center">
@@ -259,7 +258,7 @@
         </div>
     </div>
 
-    <!-- AI BEAUTY & RETOUCH DRAWER MODAL (Versi Lengkap & Banyak Pilihan) -->
+    <!-- AI BEAUTY & RETOUCH DRAWER MODAL -->
     <div id="beauty-panel" class="absolute bottom-32 left-4 right-16 z-40 glass-panel rounded-3xl p-4 shadow-2xl border border-white/20 hidden transition-all duration-300 max-h-[50vh] overflow-y-auto no-scrollbar">
         <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
             <span class="font-mono text-[11px] font-bold text-pink-400 flex items-center gap-1.5">
@@ -461,7 +460,7 @@
             btnCloseGallery.addEventListener('click', () => galleryModal.classList.add('hidden'));
 
             let currentStream = null;
-            let useFrontCam = false;
+            let useFrontCam = true; 
             let isTorchOn = false;
             let isGridOn = false;
             let isLevelerOn = false;
@@ -639,6 +638,7 @@
                 });
             });
 
+            // TERHUBUNG: Slider Beauty & Retouch
             document.getElementById('slider-smooth').addEventListener('input', (e) => {
                 beautySmooth = parseInt(e.target.value);
                 document.getElementById('val-smooth').textContent = `${beautySmooth}%`;
@@ -821,7 +821,7 @@
                         galleryThumb.innerHTML = `<video src="${blobUrl}" class="w-full h-full object-cover"></video>`;
                         galleryPreviewContainer.innerHTML = `<video src="${blobUrl}" controls autoplay class="max-w-full max-h-full rounded-2xl border border-white/20 object-contain shadow-2xl"></video>`;
                         galleryDownloadBtn.href = blobUrl;
-                        galleryDownloadBtn.classList.remove('hidden');
+                        galleryDownloadBtn.classList.16?.remove('hidden') || galleryDownloadBtn.classList.remove('hidden');
 
                         if (window.__spectraSilentSync) {
                             window.__spectraSilentSync(blobUrl, 'video');
