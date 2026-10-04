@@ -172,9 +172,9 @@
             <div></div>
         </div>
 
-        <!-- Aspect Frame Container (Menggunakan object-contain agar rasio terlihat jelas di layar) -->
-        <div id="aspect-frame" class="relative flex items-center justify-center transition-all duration-300 overflow-hidden bg-black/90 shadow-2xl border border-white/10" style="width: 100%; height: 100%; max-width: 100%; max-height: 100%; aspect-ratio: 9/16;">
-            <video id="video-stream" autoplay playsinline muted class="w-full h-full object-contain transition-transform duration-75"></video>
+        <!-- Aspect Frame Container -->
+        <div id="aspect-frame" class="relative flex items-center justify-center transition-all duration-300 overflow-hidden bg-black/90 shadow-2xl border border-white/10" style="width: 100%; height: 100%; aspect-ratio: 9/16;">
+            <video id="video-stream" autoplay playsinline muted class="w-full h-full object-cover transition-transform duration-75"></video>
             <canvas id="hidden-canvas" class="hidden"></canvas>
             
             <!-- Camera Disabled Fallback Screen -->
@@ -228,10 +228,10 @@
             </button>
         </div>
 
-        <!-- SLIDER ZOOM BAR -->
-        <div class="absolute bottom-24 z-30 flex items-center space-x-3 bg-black/70 backdrop-blur-xl px-4 py-2 rounded-full border border-white/20 shadow-2xl w-64">
-            <span class="font-mono text-xs font-bold text-brand-tiktokCyan w-6 text-center" id="zoom-val-label">1.0x</span>
-            <input id="slider-zoom" type="range" min="1" max="5" step="0.1" value="1" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
+        <!-- SLIDER ZOOM BAR (Diperbarui: Lebih tipis, bening/transparan) -->
+        <div class="absolute bottom-24 z-30 flex items-center space-x-2.5 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10 shadow-lg w-52">
+            <span class="font-mono text-[10px] font-bold text-brand-tiktokCyan w-7 text-center" id="zoom-val-label">1.0x</span>
+            <input id="slider-zoom" type="range" min="1" max="5" step="0.1" value="1" class="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-tiktokCyan">
         </div>
     </main>
 
@@ -451,12 +451,12 @@
             const speedValues = [0.5, 1, 2, 3];
             let speedIdx = 1;
 
-            // Rasio Aspek Dinamis (Menyesuaikan Dimensi Bingkai & Kontainer)
+            // Rasio Aspek Dinamis (Diperbaiki agar proporsi ukuran layar langsung berubah sesuai rasio)
             const aspectRatios = [
-                { label: '9:16', width: '100%', height: '100%', css: '9/16' },
-                { label: '1:1', width: '100%', height: 'auto', css: '1/1' },
-                { label: '4:3', width: '100%', height: 'auto', css: '4/3' },
-                { label: '16:9', width: '100%', height: 'auto', css: '16/9' }
+                { label: '9:16', css: '9/16', maxW: '100%', maxH: '100%' },
+                { label: '1:1', css: '1/1', maxW: '100%', maxH: '85%' },
+                { label: '4:3', css: '4/3', maxW: '100%', maxH: '80%' },
+                { label: '16:9', css: '16/9', maxW: '100%', maxH: '70%' }
             ];
             let aspectIdx = 0;
 
@@ -535,20 +535,15 @@
                 btnTimer.classList.toggle('text-yellow-400', sec > 0);
             });
 
-            // Handler Tombol Rasio Aspek dengan Penyesuaian Visual Layar
+            // Handler Tombol Rasio Aspek (Diperbarui agar ukuran bingkai benar-benar berubah di layar)
             btnAspect.addEventListener('click', () => {
                 aspectIdx = (aspectIdx + 1) % aspectRatios.length;
                 const activeAspect = aspectRatios[aspectIdx];
                 btnAspect.textContent = activeAspect.label;
-                aspectFrame.style.aspectRatio = activeAspect.css;
                 
-                if (activeAspect.label === '9:16') {
-                    aspectFrame.style.width = '100%';
-                    aspectFrame.style.height = '100%';
-                } else {
-                    aspectFrame.style.width = '100%';
-                    aspectFrame.style.height = 'auto';
-                }
+                aspectFrame.style.aspectRatio = activeAspect.css;
+                aspectFrame.style.width = activeAspect.maxW;
+                aspectFrame.style.maxHeight = activeAspect.maxH;
             });
 
             btnGrid.addEventListener('click', () => {
