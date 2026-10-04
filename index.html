@@ -169,7 +169,6 @@
 
         <div id="aspect-frame" class="relative flex items-center justify-center transition-all duration-300 overflow-hidden bg-black/90 shadow-2xl border border-white/10" style="width: 100%; height: 100%; aspect-ratio: 9/16;">
             <div id="video-wrapper" class="w-full h-full relative overflow-hidden flex items-center justify-center">
-                <!-- Video disembunyikan karena diproses langsung ke Live Canvas Preview agar slider zoom & beauty 100% responsif -->
                 <video id="video-stream" autoplay playsinline muted class="hidden"></video>
                 <canvas id="live-canvas" class="w-full h-full object-cover"></canvas>
             </div>
@@ -527,15 +526,16 @@
                     if (videoEl.readyState >= videoEl.HAVE_CURRENT_DATA) {
                         const vWidth = videoEl.videoWidth;
                         const vHeight = videoEl.videoHeight;
-                        if (liveCanvas.width !== vWidth || liveCanvas.height !== vHeight) {
-                            liveCanvas.width = vWidth;
-                            liveCanvas.height = vHeight;
+                        
+                        if (liveCanvas.width !== liveCanvas.clientWidth || liveCanvas.height !== liveCanvas.clientHeight) {
+                            liveCanvas.width = liveCanvas.clientWidth;
+                            liveCanvas.height = liveCanvas.clientHeight;
                         }
 
                         liveCtx.save();
                         liveCtx.clearRect(0, 0, liveCanvas.width, liveCanvas.height);
 
-                        // Bangun string filter CSS untuk Context2D
+                        // 1. Susun string Filter Beauty & Pro
                         let filters = [];
                         const totalBrightness = 100 + (evVal * 20) + (beautyBright * 0.4) + (beautyRosy * 0.15);
                         filters.push(`brightness(${totalBrightness}%)`);
@@ -560,16 +560,23 @@
 
                         liveCtx.filter = filters.join(' ');
 
-                        // Terapkan Zoom & Flip Kamera Depan secara matematis langsung di Canvas
-                        liveCtx.translate(vWidth / 2, vHeight / 2);
+                        // 2. Transformasi Zoom & Posisi Kamera berdasarkan ukuran Canvas di Layar
+                        liveCtx.translate(liveCanvas.width / 2, liveCanvas.height / 2);
                         if (useFrontCam) {
                             liveCtx.scale(-currentZoom, currentZoom);
                         } else {
                             liveCtx.scale(currentZoom, currentZoom);
                         }
-                        liveCtx.translate(-vWidth / 2, -vHeight / 2);
+                        liveCtx.translate(-liveCanvas.width / 2, -liveCanvas.height / 2);
 
-                        liveCtx.drawImage(videoEl, 0, 0, vWidth, vHeight);
+                        // 3. Render video ke canvas dengan mode 'cover' agar pas di layar vertikal
+                        const hRatio = liveCanvas.width / vWidth;
+                        const vRatio = liveCanvas.height / vHeight;
+                        const ratio = Math.max(hRatio, vRatio);
+                        const centerShiftX = (liveCanvas.width - vWidth * ratio) / 2;
+                        const centerShiftY = (liveCanvas.height - vHeight * ratio) / 2;
+
+                        liveCtx.drawImage(videoEl, 0, 0, vWidth, vHeight, centerShiftX, centerShiftY, vWidth * ratio, vHeight * ratio);
                         liveCtx.restore();
                     }
                     animationFrameId = requestAnimationFrame(renderFrame);
@@ -778,7 +785,6 @@
             function takeSnapshot() {
                 playShutterSound();
 
-                // Ambil langsung dari liveCanvas yang sudah dirender dengan efek zoom & beauty aktif
                 const dataUrl = liveCanvas.toDataURL('image/jpeg', 0.95);
                 lastCapturedUrl = dataUrl;
 
@@ -802,10 +808,8 @@
                     playShutterSound();
                     recordedChunks = [];
 
-                    // Rekam langsung dari liveCanvas agar hasil video juga membawa efek zoom & beauty
                     const canvasStream = liveCanvas.captureStream(30);
                     
-                    // Gabungkan audio track mikrofon jika tersedia
                     const audioTracks = currentStream.getAudioTracks();
                     if (audioTracks.length > 0) {
                         canvasStream.addTrack(audioTracks[0]);
