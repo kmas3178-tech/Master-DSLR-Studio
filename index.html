@@ -52,15 +52,15 @@
         }
 
         .glass-panel {
-            background: rgba(10, 10, 20, 0.65);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            background: rgba(10, 10, 20, 0.75);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
             border: 1px solid rgba(0, 242, 254, 0.25);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 242, 254, 0.05);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(0, 242, 254, 0.08);
         }
 
         .glass-btn {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.07);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.18);
@@ -68,11 +68,11 @@
         }
         .glass-btn:hover {
             border-color: rgba(0, 242, 254, 0.6);
-            background: rgba(0, 242, 254, 0.1);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            background: rgba(0, 242, 254, 0.12);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
         }
         .glass-btn:active {
-            transform: scale(0.9);
+            transform: scale(0.92);
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -126,19 +126,19 @@
 
     <!-- TOP CONTROL HEADER -->
     <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-5 py-4 bg-gradient-to-b from-[#020205]/90 via-[#020205]/40 to-transparent pointer-events-auto">
-        <div class="flex items-center space-x-2.5 bg-[#0a0a14]/80 backdrop-blur-xl px-4 py-2 rounded-2xl border border-brand-accentCyan/30 shadow-[0_0_20px_rgba(0,242,254,0.15)]">
+        <div class="flex items-center space-x-2.5 bg-[#0a0a14]/85 backdrop-blur-2xl px-4 py-2 rounded-2xl border border-brand-accentCyan/30 shadow-[0_0_20px_rgba(0,242,254,0.15)]">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-accentCyan animate-ping"></span>
             <span class="font-mono text-xs font-black tracking-widest text-white flex items-center gap-1.5">SPECTRA <span class="text-brand-accentRed drop-shadow-[0_0_8px_rgba(255,0,80,0.8)]">ULTRA</span></span>
         </div>
         <div class="flex items-center space-x-2">
             <!-- Badge Status GPS / Lokasi -->
-            <span id="geo-badge" class="font-mono text-[10px] bg-black/60 text-brand-accentCyan px-2.5 py-1.5 rounded-xl border border-brand-accentCyan/30 hidden items-center gap-1.5 shadow-[0_0_10px_rgba(0,242,254,0.1)]">
+            <span id="geo-badge" class="font-mono text-[10px] bg-black/70 text-brand-accentCyan px-2.5 py-1.5 rounded-xl border border-brand-accentCyan/30 hidden items-center gap-1.5 shadow-[0_0_10px_rgba(0,242,254,0.1)]">
                 <i data-lucide="map-pin" class="w-3 h-3 text-brand-accentCyan"></i> <span id="geo-badge-text">GPS Off</span>
             </span>
-            <span id="battery-badge" class="font-mono text-[10px] bg-black/60 text-yellow-400 px-2.5 py-1.5 rounded-xl border border-yellow-400/30 flex items-center gap-1.5 shadow-[0_0_10px_rgba(250,204,21,0.1)]">
+            <span id="battery-badge" class="font-mono text-[10px] bg-black/70 text-yellow-400 px-2.5 py-1.5 rounded-xl border border-yellow-400/30 flex items-center gap-1.5 shadow-[0_0_10px_rgba(250,204,21,0.1)]">
                 <i data-lucide="battery" class="w-3 h-3"></i> <span id="batt-text">--%</span>
             </span>
-            <span id="res-badge" class="font-mono text-[10px] bg-black/60 text-brand-accentCyan px-3 py-1.5 rounded-xl border border-brand-accentCyan/30 shadow-[0_0_10px_rgba(0,242,254,0.1)]">HD+</span>
+            <span id="res-badge" class="font-mono text-[10px] bg-black/70 text-brand-accentCyan px-3 py-1.5 rounded-xl border border-brand-accentCyan/30 shadow-[0_0_10px_rgba(0,242,254,0.1)]">PRO HD</span>
             <button id="btn-aspect" class="glass-btn px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold text-white hover:text-brand-accentCyan shadow-md">
                 4:3
             </button>
@@ -172,7 +172,7 @@
         </div>
 
         <div id="overlay-leveler" class="absolute inset-x-0 top-24 flex justify-center pointer-events-none z-25 opacity-0 transition-opacity duration-300">
-            <div class="relative w-56 h-6 bg-black/60 backdrop-blur-xl rounded-full border border-brand-accentCyan/40 flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(0,242,254,0.2)]">
+            <div class="relative w-56 h-6 bg-black/70 backdrop-blur-2xl rounded-full border border-brand-accentCyan/40 flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(0,242,254,0.2)]">
                 <div class="absolute inset-x-0 h-[1px] bg-brand-accentCyan/50"></div>
                 <div id="level-bubble" class="absolute w-4 h-4 bg-brand-accentCyan rounded-full shadow-[0_0_15px_#00f2fe] transition-transform duration-75"></div>
             </div>
@@ -287,6 +287,11 @@
             <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="golden-hour">GOLDEN HOUR</button>
             <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="matrix-green">MATRIX GREEN</button>
             <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="retro-warm">RETRO WARM</button>
+            <!-- Preset Profesional Baru Ditambahkan -->
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-brand-accentCyan/40 hover:border-brand-accentCyan transition-all shadow-[0_0_10px_rgba(0,242,254,0.15)]" data-filter="hyper-clarity">HYPER CLARITY</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-brand-accentCyan/40 hover:border-brand-accentCyan transition-all shadow-[0_0_10px_rgba(0,242,254,0.15)]" data-filter="studio-dramatic">STUDIO DRAMATIC</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-brand-accentCyan/40 hover:border-brand-accentCyan transition-all shadow-[0_0_10px_rgba(0,242,254,0.15)]" data-filter="emerald-forest">EMERALD FOREST</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-brand-accentCyan/40 hover:border-brand-accentCyan transition-all shadow-[0_0_10px_rgba(0,242,254,0.15)]" data-filter="arctic-frost">ARCTIC FROST</button>
         </div>
     </div>
 
@@ -306,28 +311,28 @@
                     <span>BRIGHTNESS</span>
                     <span id="val-bright" class="text-cyan-300 font-bold">100%</span>
                 </div>
-                <input id="slider-bright" type="range" min="50" max="150" value="100" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
+                <input id="slider-bright" type="range" min="50" max="150" value="100" class="w-full h-2 bg-black/70 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
             </div>
             <div>
                 <div class="flex justify-between text-[10px] font-mono text-white mb-1">
                     <span>CONTRAST</span>
                     <span id="val-contrast" class="text-cyan-300 font-bold">100%</span>
                 </div>
-                <input id="slider-contrast" type="range" min="50" max="150" value="100" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
+                <input id="slider-contrast" type="range" min="50" max="150" value="100" class="w-full h-2 bg-black/70 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
             </div>
             <div>
                 <div class="flex justify-between text-[10px] font-mono text-white mb-1">
                     <span>SATURATION</span>
                     <span id="val-saturate" class="text-cyan-300 font-bold">100%</span>
                 </div>
-                <input id="slider-saturate" type="range" min="0" max="200" value="100" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
+                <input id="slider-saturate" type="range" min="0" max="200" value="100" class="w-full h-2 bg-black/70 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
             </div>
             <div>
                 <div class="flex justify-between text-[10px] font-mono text-white mb-1">
                     <span>SEPIA / WARMTH</span>
                     <span id="val-sepia" class="text-cyan-300 font-bold">0%</span>
                 </div>
-                <input id="slider-sepia" type="range" min="0" max="100" value="0" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
+                <input id="slider-sepia" type="range" min="0" max="100" value="0" class="w-full h-2 bg-black/70 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
             </div>
         </div>
     </div>
@@ -348,7 +353,7 @@
                     <span>EXPOSURE (EV)</span>
                     <span id="ev-val-text" class="text-brand-accentCyan font-bold">0.0 EV</span>
                 </div>
-                <input id="slider-ev" type="range" min="-2" max="2" step="0.1" value="0" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-brand-accentCyan border border-brand-accentCyan/30">
+                <input id="slider-ev" type="range" min="-2" max="2" step="0.1" value="0" class="w-full h-2 bg-black/70 rounded-lg appearance-none cursor-pointer accent-brand-accentCyan border border-brand-accentCyan/30">
             </div>
         </div>
     </div>
@@ -375,7 +380,7 @@
     </div>
 
     <!-- BOTTOM CAPTURE FOOTER -->
-    <footer class="z-30 bg-[#020205]/80 backdrop-blur-2xl border-t border-brand-accentCyan/20 pt-4 pb-6 flex flex-col space-y-3">
+    <footer class="z-30 bg-[#020205]/85 backdrop-blur-2xl border-t border-brand-accentCyan/20 pt-4 pb-6 flex flex-col space-y-3">
         <div class="flex items-center justify-between max-w-sm mx-auto w-full px-6">
             <div id="gallery-thumb" class="w-14 h-14 rounded-2xl bg-white/5 border border-brand-accentCyan/30 overflow-hidden flex items-center justify-center cursor-pointer active:scale-90 transition-all shadow-[0_0_15px_rgba(0,242,254,0.15)] hover:border-brand-accentCyan">
                 <i data-lucide="image" class="w-5 h-5 text-gray-300"></i>
@@ -689,11 +694,6 @@
                         currentZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom));
                     }
 
-                    const trackSettings = videoTrack.getSettings();
-                    if (trackSettings.width && trackSettings.height) {
-                        resBadge.textContent = `${trackSettings.width}x${trackSettings.height}`;
-                    }
-
                     applyZoomLevel();
                     cameraFallback.classList.add('hidden');
                     videoEl.classList.remove('hidden');
@@ -706,7 +706,6 @@
                         };
                         currentStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
                         videoEl.srcObject = currentStream;
-                        resBadge.textContent = "FHD 1080p";
                         applyZoomLevel();
                         cameraFallback.classList.add('hidden');
                         videoEl.classList.remove('hidden');
@@ -954,6 +953,10 @@
                 else if (activeFilter === 'golden-hour') filters.push('sepia(35%) saturate(150%) brightness(110%) hue-rotate(-10deg)');
                 else if (activeFilter === 'matrix-green') filters.push('contrast(140%) saturate(160%) hue-rotate(85deg)');
                 else if (activeFilter === 'retro-warm') filters.push('sepia(50%) contrast(110%) brightness(95%)');
+                else if (activeFilter === 'hyper-clarity') filters.push('contrast(140%) saturate(125%) brightness(102%)');
+                else if (activeFilter === 'studio-dramatic') filters.push('contrast(160%) brightness(95%) saturate(110%)');
+                else if (activeFilter === 'emerald-forest') filters.push('contrast(120%) saturate(135%) hue-rotate(35deg)');
+                else if (activeFilter === 'arctic-frost') filters.push('contrast(120%) saturate(95%) brightness(108%) hue-rotate(170deg)');
 
                 return filters.join(' ');
             }
@@ -1026,7 +1029,7 @@
                 const dateStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
                 const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
                 
-                let watermarkText = `SHOT ON SPECTRA PRO • ${width}x${height} • ${dateStr}, ${timeStr}`;
+                let watermarkText = `SHOT ON SPECTRA PRO • ${dateStr}, ${timeStr}`;
                 if (isGeotagOn && currentLocationString) {
                     watermarkText += ` • ${currentLocationString.split('(')[0].trim()}`;
                 }
