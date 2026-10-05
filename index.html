@@ -570,11 +570,12 @@
                         currentStream.getTracks().forEach(track => track.stop());
                     }
 
+                    // [DIOPTIMALKAN] Resolusi target ditingkatkan ke format maksimal 4K
                     const constraints = {
                         video: {
                             facingMode: useFrontCam ? 'user' : 'environment',
-                            width: { ideal: 3840, min: 1280, max: 4096 },
-                            height: { ideal: 2160, min: 720, max: 2160 }
+                            width: { ideal: 4096, min: 1920 },
+                            height: { ideal: 2160, min: 1080 }
                         },
                         audio: false
                     };
@@ -664,7 +665,6 @@
                     } catch (e) {}
                 }
 
-                // Fallback CSS Transform Zoom jika hardware zoom tidak didukung penuh
                 let transforms = [];
                 if (useFrontCam) transforms.push('scaleX(-1)');
                 if (currentZoom > 1.0) transforms.push(`scale(${currentZoom})`);
@@ -759,13 +759,12 @@
                 levelBubble.style.transform = `translateX(${offset}px)`;
             }
 
-         viewfinder.addEventListener('click', async (e) => {
-                if(e.touches) return; // Abaikan jika dari touch event pinch
+            viewfinder.addEventListener('click', async (e) => {
+                if(e.touches) return;
                 const rect = viewfinder.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
 
-                // 1. Tampilkan animasi visual ring (posisi pas di tengah sentuhan)
                 focusRing.style.left = `${x - 32}px`;
                 focusRing.style.top = `${y - 32}px`;
                 focusRing.classList.remove('hidden', 'focus-ring-anim');
@@ -774,7 +773,6 @@
 
                 setTimeout(() => focusRing.classList.add('hidden'), 800);
 
-                // 2. Fungsionalitas Hardware Focus Universal (Aman untuk semua HP)
                 if (currentStream) {
                     try {
                         const videoTrack = currentStream.getVideoTracks()[0];
@@ -791,10 +789,7 @@
                                 }]
                             });
                         }
-                    } catch (err) {
-                        // Diabaikan otomatis jika perangkat/browser tidak mendukung hardware focus
-                        console.log("Hardware focus tidak didukung di perangkat ini, menggunakan efek visual.");
-                    }
+                    } catch (err) {}
                 }
             });
 
@@ -913,12 +908,15 @@
 
                 const ctx = hiddenCanvas.getContext('2d');
 
+                // [DIOPTIMALKAN] Mengaktifkan perajangan piksel kualitas tinggi
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+
                 if (useFrontCam) {
                     ctx.translate(width, 0);
                     ctx.scale(-1, 1);
                 }
 
-                // Terapkan filter persis seperti yang tampil pada video preview
                 ctx.filter = getActiveFilterString();
                 ctx.drawImage(videoEl, 0, 0, width, height);
 
@@ -941,9 +939,9 @@
                 ctx.fillText(watermarkText, padding, height - padding);
                 ctx.restore();
 
-                const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 0.98);
+                // [DIOPTIMALKAN] Kompresi JPEG diset ke kualitas maksimal (1.0)
+                const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 1.0);
                 
-                // Simpan ke IndexedDB (Aman dari batasan penyimpanan localStorage)
                 savePhotoToDB(dataUrl);
 
                 const flash = document.createElement('div');
